@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Activate your account</title>
+</head>
+<body>
+<h2>Hi there!, <span th:text="${username}"></span></h2>
+<p>Please click the link below to activate your account :</p>
+<p>
+    <a th:href="@{${confirmationUrl}}"></a>
+</p>
+<p>Your activation code : <strong th:text="${activation_code}">XXXXXX</strong></p>
+<p>This code will expire in 15 minutes.</p>
+<p>Thanks,<br/>Bitask Team</p>
+</body>
+</html>
