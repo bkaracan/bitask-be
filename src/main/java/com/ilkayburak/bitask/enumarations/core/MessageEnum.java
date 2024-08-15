@@ -13,7 +13,8 @@ public enum MessageEnum {
     DELETE_SUCCESS(6, "Record is deleted successfully."),
     RECORD_EXISTS(7, "Record already exists"),
     EMPTY_LIST(8, "List is Empty"),
-    AUTHENTICATED(9, "The user has been authenticated!");
+    AUTHENTICATED(9, "The user has been authenticated!"),
+    REGISTRATION_SUCCESS(10, "The registration has been completed!");
 
 
     private final Integer kod;
