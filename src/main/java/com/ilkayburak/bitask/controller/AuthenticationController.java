@@ -1,7 +1,10 @@
 package com.ilkayburak.bitask.controller;
 
 import com.ilkayburak.bitask.auth.AuthenticationService;
+import com.ilkayburak.bitask.dto.AuthenticationRequestDTO;
+import com.ilkayburak.bitask.dto.AuthenticationResponseDTO;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
+import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -22,8 +25,14 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequestDTO registrationRequestDTO) throws MessagingException {
-       authenticationService.register(registrationRequestDTO);
-       return ResponseEntity.accepted().build();
+    public ResponsePayload<?> register(@RequestBody @Valid RegistrationRequestDTO registrationRequestDTO) throws MessagingException {
+        return authenticationService.register(registrationRequestDTO);
     }
+
+    @PostMapping("/authenticate")
+    public ResponsePayload<AuthenticationResponseDTO> authenticate(@RequestBody AuthenticationRequestDTO authenticationRequestDTO) {
+        return authenticationService.authenticate(authenticationRequestDTO);
+    }
+
+
 }

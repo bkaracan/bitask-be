@@ -41,7 +41,7 @@ public class User implements UserDetails, Principal {
 
     private String password;
 
-    private String title;
+    private String jobTitle;
 
     private boolean isAccountLocked;
 
@@ -103,7 +103,11 @@ public class User implements UserDetails, Principal {
         return isEnabled;
     }
 
-    private String getFullName() {
+    public String fullName() {
+        return getFirstName() + " " + getLastName();
+    }
+
+    public String getFullName() {
         return firstName + "" + lastName;
     }
 }
