@@ -14,7 +14,9 @@ public enum MessageEnum {
     RECORD_EXISTS(7, "Record already exists"),
     EMPTY_LIST(8, "List is Empty"),
     AUTHENTICATED(9, "The user has been authenticated!"),
-    REGISTRATION_SUCCESS(10, "The registration has been completed!");
+    REGISTRATION_SUCCESS(10, "The registration has been completed!" +
+            " Please check your email to activate your account."),
+    ACTIVATION_SUCCESS(11, "The activation has been completed!");
 
 
     private final Integer kod;

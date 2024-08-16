@@ -12,5 +12,5 @@ public interface AuthenticationService {
 
     ResponsePayload<AuthenticationResponseDTO> authenticate(AuthenticationRequestDTO authenticationRequestDTO);
 
-    void activateAccount(String token) throws MessagingException;
+    ResponsePayload<String> activateAccount(String token) throws MessagingException;
 }
