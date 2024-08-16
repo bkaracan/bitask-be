@@ -11,4 +11,6 @@ public interface AuthenticationService {
     ResponsePayload<?> register(RegistrationRequestDTO registrationRequestDTO) throws MessagingException;
 
     ResponsePayload<AuthenticationResponseDTO> authenticate(AuthenticationRequestDTO authenticationRequestDTO);
+
+    void activateAccount(String token) throws MessagingException;
 }

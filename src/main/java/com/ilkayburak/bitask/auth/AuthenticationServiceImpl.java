@@ -24,8 +24,10 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+    import org.springframework.security.core.userdetails.UsernameNotFoundException;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
 
     @Service
     @RequiredArgsConstructor(onConstructor_ = @__(@Autowired))
@@ -80,6 +82,24 @@
                     AuthenticationResponseDTO.builder()
                             .token(jwtoken)
                             .build());
+        }
+
+        @Override
+        @Transactional
+        public void activateAccount(String token) throws MessagingException {
+            Token savedToken = tokenRepository.findByTokenValue(token)
+                    .orElseThrow(() -> new RuntimeException("Invalid token"));
+            if(LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
+                sendValidationEmail(savedToken.getUser());
+                throw new RuntimeException
+                        ("Activation token has expired. A new token has been sent to the same email address");
+            }
+            var user = userRepository.findById(savedToken.getUser().getId())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            user.setEnabled(true);
+            userRepository.save(user);
+            savedToken.setValidatedAt(LocalDateTime.now());
+            tokenRepository.save(savedToken);
         }
 
         private void sendValidationEmail(User user) throws MessagingException {
