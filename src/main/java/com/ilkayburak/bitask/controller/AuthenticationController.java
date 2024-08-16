@@ -10,11 +10,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
@@ -32,6 +28,11 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponsePayload<AuthenticationResponseDTO> authenticate(@RequestBody AuthenticationRequestDTO authenticationRequestDTO) {
         return authenticationService.authenticate(authenticationRequestDTO);
+    }
+
+    @GetMapping("/activate-account")
+    public void confirm(@RequestParam String token) throws MessagingException {
+        authenticationService.activateAccount(token);
     }
 
 
