@@ -10,6 +10,8 @@ import com.ilkayburak.bitask.entity.User;
 import com.ilkayburak.bitask.enumarations.EmailTemplateNameEnum;
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
+import com.ilkayburak.bitask.mapper.UserDTOMapper;
+import com.ilkayburak.bitask.repository.JobTitleRepository;
 import com.ilkayburak.bitask.repository.RoleRepository;
 import com.ilkayburak.bitask.repository.TokenRepository;
 import com.ilkayburak.bitask.repository.UserRepository;
@@ -37,9 +39,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final TokenRepository tokenRepository;
+  private final JobTitleRepository jobTitleRepository;
   private final EmailService emailService;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
+  private final UserDTOMapper userDTOMapper;
 
   public ResponsePayload<?> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
@@ -47,18 +51,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         roleRepository
             .findByName("USER")
             .orElseThrow(() -> new IllegalStateException("Role USER was not initialized!"));
-    var user =
-        User.builder()
-            .firstName(registrationRequestDTO.getFirstName())
-            .lastName(registrationRequestDTO.getLastName())
-            .email(registrationRequestDTO.getEmail())
-            .password(passwordEncoder.encode(registrationRequestDTO.getPassword()))
-            .jobTitle(registrationRequestDTO.getJobTitle())
-            .dateOfBirth(registrationRequestDTO.getDateOfBirth())
-            .isAccountLocked(false)
-            .isEnabled(false)
-            .roles(List.of(userRole))
-            .build();
+    // jobTitleId ile JobTitle entity'sini buluyoruz
+    var jobTitle =
+        jobTitleRepository
+            .findById(registrationRequestDTO.getJobTitleId())
+            .orElseThrow(() -> new IllegalStateException("Job title not found!"));
+    // Mapper sınıfında User entity'sini oluşturuyoruz
+    var user = userDTOMapper.mapForRegistration(registrationRequestDTO, jobTitle);
+    user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreyi encode ediyoruz
+    user.setRoles(List.of(userRole));
     userRepository.save(user);
     sendValidationEmail(user);
     return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.REGISTRATION_SUCCESS.getMessage());
