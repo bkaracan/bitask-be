@@ -15,22 +15,17 @@ import lombok.Setter;
 @Builder
 public class RegistrationRequestDTO {
 
-    @NotEmpty(message = "First name is mandatory!")
     @NotBlank(message = "First name is mandatory!")
     private String firstName;
-    @NotEmpty(message = "Last name is mandatory!")
     @NotBlank(message = "Last name is mandatory!")
     private String lastName;
     @Column(unique = true)
-    @NotEmpty(message = "e-mail is mandatory!")
     @NotBlank(message = "e-mail is mandatory!")
     @Email(message = "email is not formatted!")
     private String email;
-    @NotEmpty(message = "Password is mandatory!")
     @NotBlank(message = "Password is mandatory!")
     @Size(min = 8, message = "Password must be 8 characters long minimum!")
     private String password;
-    @NotEmpty(message = "Title is mandatory!")
     @NotBlank(message = "Title is mandatory!")
     private String jobTitle;
     private LocalDate dateOfBirth;
