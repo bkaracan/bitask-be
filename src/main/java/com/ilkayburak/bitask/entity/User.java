@@ -41,7 +41,9 @@ public class User implements UserDetails, Principal {
 
     private String password;
 
-    private String jobTitle;
+    @ManyToOne
+    @JoinColumn(name = "job_title_id")
+    private JobTitle jobTitle;
 
     private boolean isAccountLocked;
 
