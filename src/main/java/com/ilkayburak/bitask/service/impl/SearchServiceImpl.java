@@ -4,16 +4,13 @@ import com.ilkayburak.bitask.dto.JobTitleDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.enumarations.JobTitleEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
-import com.ilkayburak.bitask.mapper.JobTitleDTOMapper;
-import com.ilkayburak.bitask.repository.JobTitleRepository;
 import com.ilkayburak.bitask.service.SearchService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
