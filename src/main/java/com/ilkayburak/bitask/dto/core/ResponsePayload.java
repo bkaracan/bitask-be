@@ -43,7 +43,7 @@ public class ResponsePayload<T> {
     this.message = message;
     this.data = data;
   }
-
+  
   public ResponsePayload(
       ResponseEnum responseEnum, String message, T data, Boolean showNotification) {
     this(responseEnum);
@@ -77,6 +77,8 @@ public class ResponsePayload<T> {
     this.data = data;
     this.showNotification = showNotification;
   }
+
+
 
   public ResponsePayload(ResponseEnum responseEnum, String message, Boolean success, T data) {
     this(responseEnum);
@@ -117,5 +119,5 @@ public class ResponsePayload<T> {
     this.message = message;
     this.success = responseEnum.getIsSuccess();
   }
-
+  
 }

@@ -21,7 +21,8 @@ public enum MessageEnum {
     NEW_PASSWORD_DOES_NOT_MATCH(13, "New password does not match!"),
     ACCOUNT_LOCKED(14, "User account is locked!"),
     ACCOUNT_DISABLED(15, "User account is disabled!"),
-    BAD_CREDENTIALS(16, "Email and/or password is incorrect!");
+    BAD_CREDENTIALS(16, "Email and/or password is incorrect!"),
+    RETRIEVE_SUCCESS(17, "Data retrieved successfully!");
 
 
 

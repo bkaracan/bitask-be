@@ -87,7 +87,7 @@ public class UserDTOMapper {
         .lastName(user.getLastName())
         .dateOfBirth(user.getDateOfBirth())
         .email(user.getEmail())
-        .jobTitle(new JobTitleDTOMapper().mapWithoutObjects(user.getJobTitle()))
+        .jobTitle(new JobTitleDTOMapper().convertToDto(user.getJobTitle()))
         .isAccountLocked(user.isAccountLocked())
         .isEnabled(user.isEnabled())
         .createdDate(user.getCreatedDate())
