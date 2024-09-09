@@ -40,16 +40,6 @@ public class JobTitleDTOMapper {
         .toList();
   }
 
-  public JobTitleDTO mapWithoutObjects(JobTitle jobTitle) {
-    if (jobTitle == null) {
-      return null;
-    }
-    return JobTitleDTO.builder()
-        .id(jobTitle.getId())
-        .name(jobTitle.getName())
-        .build();
-  }
-
   public JobTitleDTO mapWithObjects(JobTitle jobTitle) {
     if (jobTitle == null) {
       return null;
@@ -63,7 +53,7 @@ public class JobTitleDTOMapper {
 
   public List<JobTitleDTO> mapListWithoutObjects(List<JobTitle> jobTitles) {
     return jobTitles.stream()
-        .map(this::mapWithoutObjects)
+        .map(this::convertToDto)
         .toList();
   }
 
