@@ -48,11 +48,11 @@ public class TaskDTOMapper {
     }
 
     public List<TaskDTO> mapList(List<Task> list) {
-        return list.stream().map(this::convertToDto).collect(Collectors.toList());
+        return list.stream().map(this::convertToDto).toList();
     }
 
     public List<Task> convertListToEntity(List<TaskDTO> list) {
-        return list.stream().map(this::convertToEntity).collect(Collectors.toList());
+        return list.stream().map(this::convertToEntity).toList();
     }
 
     public TaskDTO mapWithoutObjects(Task task) {
@@ -74,6 +74,6 @@ public class TaskDTOMapper {
     }
 
     public List<TaskDTO> mapListWithoutObjects(List<Task> list) {
-        return list.stream().map(this::mapWithoutObjects).collect(Collectors.toList());
+        return list.stream().map(this::mapWithoutObjects).toList();
     }
 }
