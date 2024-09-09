@@ -19,44 +19,48 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TaskServiceImpl implements TaskService {
 
-    private final TaskRepository repository;
-    private final TaskDTOMapper mapper;
+  private final TaskRepository repository;
+  private final TaskDTOMapper mapper;
 
-    @Override
-    public ResponsePayload<TaskDTO> save(TaskDTO taskDTO) {
-        Optional<Task> task = repository.findById(taskDTO.getId());
-        if (!task.isPresent()) {
-            return new ResponsePayload(ResponseEnum.OK, "Task created successfully.",
-                    mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
-        }
-        return new ResponsePayload(ResponseEnum.OK, "Task updated successfully.",
-                mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
+  @Override
+  public ResponsePayload<TaskDTO> save(TaskDTO taskDTO) {
+    Optional<Task> task = repository.findById(taskDTO.getId());
+    if (task.isEmpty()) {
+      return new ResponsePayload<>(
+          ResponseEnum.OK,
+          "Task created successfully.",
+          mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
     }
+    return new ResponsePayload<>(
+        ResponseEnum.OK,
+        "Task updated successfully.",
+        mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
+  }
 
-    @Override
-    public ResponsePayload<TaskDTO> getById(Long id) {
-        Optional<Task> task = repository.findById(id);
-        if (!task.isPresent()) {
-            return new ResponsePayload(ResponseEnum.OK, mapper.convertToDto(task.get()));
-        }
-        return new ResponsePayload(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND);
+  @Override
+  public ResponsePayload<TaskDTO> getById(Long id) {
+    Optional<Task> task = repository.findById(id);
+    if (task.isEmpty()) {
+      return new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDto(task.get()));
     }
+    return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+  }
 
-    @Override
-    public ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId) {
-        List<Task> tasks = repository.findAllByBoardId(boardId);
-        if (!tasks.isEmpty()) {
-            return new ResponsePayload(ResponseEnum.OK, mapper.mapList(tasks));
-        }
-        return new ResponsePayload(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST);
+  @Override
+  public ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId) {
+    List<Task> tasks = repository.findAllByBoardId(boardId);
+    if (!tasks.isEmpty()) {
+      return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(tasks));
     }
+    return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST.getMessage());
+  }
 
-    @Override
-    public ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndBoardId(Long status, Long boardId) {
-        List<Task> tasks = repository.findAllByBoardIdAndStatus(boardId, status);
-        if (!tasks.isEmpty()) {
-            return new ResponsePayload(ResponseEnum.OK, mapper.mapList(tasks));
-        }
-        return new ResponsePayload(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST);
+  @Override
+  public ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndBoardId(Long status, Long boardId) {
+    List<Task> tasks = repository.findAllByBoardIdAndStatus(boardId, status);
+    if (!tasks.isEmpty()) {
+      return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(tasks));
     }
+    return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST.getMessage());
+  }
 }
