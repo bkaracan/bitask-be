@@ -3,6 +3,7 @@ package com.ilkayburak.bitask.controller;
 import com.ilkayburak.bitask.dto.JobTitleDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.service.SearchService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/getAllJobTitles")
-    public ResponsePayload<JobTitleDTO> getAllJobTitles() {
+    public ResponsePayload<List<String>> getAllJobTitles() {
         return searchService.getAllJobTitles();
     }
 
