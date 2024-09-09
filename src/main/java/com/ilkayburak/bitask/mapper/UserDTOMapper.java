@@ -109,8 +109,8 @@ public class UserDTOMapper {
 
   public User mapForRegistration(RegistrationRequestDTO registrationRequestDTO, JobTitle jobTitle) {
     return User.builder()
-        .firstName(registrationRequestDTO.getFirstName())
-        .lastName(registrationRequestDTO.getLastName())
+        .firstName(registrationRequestDTO.getFormattedName(registrationRequestDTO.getFirstName()))
+        .lastName(registrationRequestDTO.getFormattedName(registrationRequestDTO.getLastName()))
         .email(registrationRequestDTO.getEmail())
         .password(registrationRequestDTO.getPassword())  // Şifreyi encode ederken register metodu içinde encode edeceğiz
         .jobTitle(jobTitle)  // JobTitle entity'sini dışarıdan alıyoruz
