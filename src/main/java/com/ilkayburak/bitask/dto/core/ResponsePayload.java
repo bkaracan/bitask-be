@@ -2,7 +2,11 @@ package com.ilkayburak.bitask.dto.core;
 
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class ResponsePayload<T> {
   private Integer code;
   private String message;
@@ -100,42 +104,6 @@ public class ResponsePayload<T> {
     this.success = success;
   }
 
-  public Integer getCode() {
-    return code;
-  }
-
-  public void setCode(Integer code) {
-    this.code = code;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public Boolean getSuccess() {
-    return success;
-  }
-
-  public void setSuccess(Boolean success) {
-    this.success = success;
-  }
-
-  public Boolean getShowNotification() {
-    return showNotification;
-  }
-
-  public void setShowNotification(Boolean showNotification) {
-    this.showNotification = showNotification;
-  }
-
-  public ResponseEnum getResponseEnum() {
-    return responseEnum;
-  }
-
   public void setResponseEnum(ResponseEnum responseEnum) {
     this.responseEnum = responseEnum;
     this.code = responseEnum.getHttpStatusCode();
@@ -150,11 +118,4 @@ public class ResponsePayload<T> {
     this.success = responseEnum.getIsSuccess();
   }
 
-  public T getData() {
-    return data;
-  }
-
-  public void setData(T data) {
-    this.data = data;
-  }
 }
