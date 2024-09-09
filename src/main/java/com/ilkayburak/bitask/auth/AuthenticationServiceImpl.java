@@ -10,6 +10,8 @@ import com.ilkayburak.bitask.entity.User;
 import com.ilkayburak.bitask.enumarations.EmailTemplateNameEnum;
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
+import com.ilkayburak.bitask.exception.InvalidTokenException;
+import com.ilkayburak.bitask.exception.TokenExpiredException;
 import com.ilkayburak.bitask.mapper.UserDTOMapper;
 import com.ilkayburak.bitask.repository.JobTitleRepository;
 import com.ilkayburak.bitask.repository.RoleRepository;
@@ -88,10 +90,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     Token savedToken =
         tokenRepository
             .findByTokenValue(token)
-            .orElseThrow(() -> new RuntimeException("Invalid token"));
+            .orElseThrow(() -> new InvalidTokenException("Invalid token"));
     if (LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
       sendValidationEmail(savedToken.getUser());
-      throw new RuntimeException(
+      throw new TokenExpiredException(
           "Activation token has expired. A new token has been sent to the same email address");
     }
     var user =

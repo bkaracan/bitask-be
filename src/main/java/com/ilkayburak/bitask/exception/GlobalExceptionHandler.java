@@ -5,7 +5,6 @@ import static com.ilkayburak.bitask.enumarations.core.ResponseEnum.*;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import jakarta.mail.MessagingException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
