@@ -3,6 +3,7 @@ package com.ilkayburak.bitask.auth;
 import com.ilkayburak.bitask.dto.AuthenticationRequestDTO;
 import com.ilkayburak.bitask.dto.AuthenticationResponseDTO;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
+import com.ilkayburak.bitask.dto.RegistrationResponseDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.email.EmailService;
 import com.ilkayburak.bitask.entity.Token;
@@ -47,7 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final JwtService jwtService;
   private final UserDTOMapper userDTOMapper;
 
-  public ResponsePayload<?> register(RegistrationRequestDTO registrationRequestDTO)
+  public ResponsePayload<RegistrationResponseDTO> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
     var userRole =
         roleRepository
@@ -64,7 +65,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setRoles(List.of(userRole));
     userRepository.save(user);
     sendValidationEmail(user);
-    return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.REGISTRATION_SUCCESS.getMessage());
+    return new ResponsePayload<>(
+        ResponseEnum.OK,
+        MessageEnum.REGISTRATION_SUCCESS.getMessage(),
+        RegistrationResponseDTO.builder().build());
   }
 
   @Override
