@@ -14,19 +14,19 @@ public enum TaskPriorityEnum {
     private final Long code;
     private final String name;
 
-    public static TaskStatusEnum getByCode(Long code) {
-        for (TaskStatusEnum taskStatusEnum : TaskStatusEnum.values()) {
-            if (taskStatusEnum.getCode().equals(code)) {
-                return taskStatusEnum;
+    public static TaskPriorityEnum getByCode(Long code) {
+        for (TaskPriorityEnum taskPriorityEnum : TaskPriorityEnum.values()) {
+            if (taskPriorityEnum.getCode().equals(code)) {
+                return taskPriorityEnum;
             }
         }
         return null;
     }
 
-    public static TaskStatusEnum getByName(String name) {
-        for (TaskStatusEnum taskStatusEnum : TaskStatusEnum.values()) {
-            if (taskStatusEnum.getName().equalsIgnoreCase(name)) {
-                return taskStatusEnum;
+    public static TaskPriorityEnum getByName(String name) {
+        for (TaskPriorityEnum taskPriorityEnum : TaskPriorityEnum.values()) {
+            if (taskPriorityEnum.getName().equalsIgnoreCase(name)) {
+                return taskPriorityEnum;
             }
         }
         return null;
