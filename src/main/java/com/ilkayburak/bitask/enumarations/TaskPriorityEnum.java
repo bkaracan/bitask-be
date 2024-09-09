@@ -5,17 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TaskStatusEnum {
+public enum TaskPriorityEnum {
 
-    BACKLOG(1L, "Backlog"),
-    OPEN(2L, "OPEN"),
-    IN_PROGRESS(3L, "In Progress"),
-    DONE(4L, "Done"),
-    BLOCKED(5L, "Blocked"),
-    ON_HOLD(6L, "On Hold"),
-    CANCELLED(7L, "Cancelled"),
-    REVIEW(8L, "Review"),
-    COMPLETED(9L, "Completed");
+    LOW(1L, "Low"),
+    MEDIUM(2L, "Medium"),
+    HIGH(3L, "High");
 
     private final Long code;
     private final String name;

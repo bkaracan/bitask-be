@@ -47,4 +47,20 @@ public class BoardDTOMapper {
     public List<Board> convertListToEntity(List<BoardDTO> list) {
         return list.stream().map(this::convertToEntity).collect(Collectors.toList());
     }
+
+    public BoardDTO mapWithoutObjects(Board board) {
+        if (board == null) {
+            return null;
+        }
+        return BoardDTO.builder()
+                .id(board.getId())
+                .name(board.getName())
+                .uniqueId(board.getUniqueId())
+                .createDate(board.getCreateDate())
+                .build();
+    }
+
+    public List<BoardDTO> mapListWithoutObjects(List<Board> boards) {
+        return boards.stream().map(this::mapWithoutObjects).collect(Collectors.toList());
+    }
 }

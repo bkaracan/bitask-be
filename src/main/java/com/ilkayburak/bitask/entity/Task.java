@@ -29,10 +29,9 @@ public class Task {
 
     private String title;
     private String description;
-    private Integer priority;
+    private Long priority;
 
     private Long status;
-    private Long type;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

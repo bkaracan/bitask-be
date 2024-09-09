@@ -17,9 +17,8 @@ public class TaskDTO {
     String keyId;
     private String title;
     private String description;
-    private Integer priority;
+    private Long priority;
     private Long status;
-    private Long type;
     private LocalDateTime createdDate;
     private LocalDate expectedFinishDate;
     private LocalDate deadline;

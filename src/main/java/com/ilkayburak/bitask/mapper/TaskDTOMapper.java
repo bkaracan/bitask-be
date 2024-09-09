@@ -21,7 +21,6 @@ public class TaskDTOMapper {
                 .description(task.getDescription())
                 .priority(task.getPriority())
                 .status(task.getStatus())
-                .type(task.getType())
                 .createdDate(task.getCreatedDate())
                 .expectedFinishDate(task.getExpectedFinishDate())
                 .deadline(task.getDeadline())
@@ -39,7 +38,6 @@ public class TaskDTOMapper {
                 .description(taskDTO.getDescription())
                 .priority(taskDTO.getPriority())
                 .status(taskDTO.getStatus())
-                .type(taskDTO.getType())
                 .createdDate(taskDTO.getCreatedDate())
                 .expectedFinishDate(taskDTO.getExpectedFinishDate())
                 .deadline(taskDTO.getDeadline())
@@ -55,5 +53,27 @@ public class TaskDTOMapper {
 
     public List<Task> convertListToEntity(List<TaskDTO> list) {
         return list.stream().map(this::convertToEntity).collect(Collectors.toList());
+    }
+
+    public TaskDTO mapWithoutObjects(Task task) {
+        if (task == null) {
+            return null;
+        }
+        return TaskDTO.builder()
+                .id(task.getId())
+                .keyId(task.getKeyId())
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .priority(task.getPriority())
+                .status(task.getStatus())
+                .createdDate(task.getCreatedDate())
+                .expectedFinishDate(task.getExpectedFinishDate())
+                .deadline(task.getDeadline())
+                .blockingTask(task.getBlockingTask())
+                .build();
+    }
+
+    public List<TaskDTO> mapListWithoutObjects(List<Task> list) {
+        return list.stream().map(this::mapWithoutObjects).collect(Collectors.toList());
     }
 }
