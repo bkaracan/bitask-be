@@ -3,7 +3,6 @@ package com.ilkayburak.bitask.mapper;
 import com.ilkayburak.bitask.dto.JobTitleDTO;
 import com.ilkayburak.bitask.entity.JobTitle;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,13 +31,13 @@ public class JobTitleDTOMapper {
   public List<JobTitleDTO> mapList(List<JobTitle> jobTitles) {
     return jobTitles.stream()
         .map(this::convertToDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<JobTitle> convertListToEntity(List<JobTitleDTO> jobTitleDTOs) {
     return jobTitleDTOs.stream()
         .map(this::convertToEntity)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public JobTitleDTO mapWithoutObjects(JobTitle jobTitle) {
@@ -65,12 +64,12 @@ public class JobTitleDTOMapper {
   public List<JobTitleDTO> mapListWithoutObjects(List<JobTitle> jobTitles) {
     return jobTitles.stream()
         .map(this::mapWithoutObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<JobTitleDTO> mapListWithObjects(List<JobTitle> jobTitles) {
     return jobTitles.stream()
         .map(this::mapWithObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 }

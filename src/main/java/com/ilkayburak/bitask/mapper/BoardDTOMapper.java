@@ -2,10 +2,8 @@ package com.ilkayburak.bitask.mapper;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
 import com.ilkayburak.bitask.entity.Board;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BoardDTOMapper {
@@ -41,11 +39,11 @@ public class BoardDTOMapper {
     }
 
     public List<BoardDTO> mapList(List<Board> boards) {
-        return boards.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return boards.stream().map(this::convertToDTO).toList();
     }
 
     public List<Board> convertListToEntity(List<BoardDTO> list) {
-        return list.stream().map(this::convertToEntity).collect(Collectors.toList());
+        return list.stream().map(this::convertToEntity).toList();
     }
 
     public BoardDTO mapWithoutObjects(Board board) {
@@ -61,6 +59,6 @@ public class BoardDTOMapper {
     }
 
     public List<BoardDTO> mapListWithoutObjects(List<Board> boards) {
-        return boards.stream().map(this::mapWithoutObjects).collect(Collectors.toList());
+        return boards.stream().map(this::mapWithoutObjects).toList();
     }
 }
