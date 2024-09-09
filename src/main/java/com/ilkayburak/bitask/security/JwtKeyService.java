@@ -1,5 +1,7 @@
 package com.ilkayburak.bitask.security;
 
+import com.ilkayburak.bitask.exception.JwtKeyException;
+import com.ilkayburak.bitask.exception.JwtKeyWriteException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +28,7 @@ public class JwtKeyService {
         // Mevcut key'i dosyadan oku
         this.secretKey = new String(Files.readAllBytes(Paths.get(KEY_FILE_PATH)));
       } catch (IOException e) {
-        throw new RuntimeException("Could not read JWT secret key from file", e);
+        throw new JwtKeyException("Could not read JWT secret key from file", e);
       }
     } else {
       // Yeni bir key oluştur ve dosyaya yaz
@@ -35,7 +37,7 @@ public class JwtKeyService {
       try (FileWriter writer = new FileWriter(KEY_FILE_PATH)) {
         writer.write(this.secretKey);
       } catch (IOException e) {
-        throw new RuntimeException("Could not write JWT secret key to file", e);
+        throw new JwtKeyWriteException("Could not write JWT secret key to file", e);
       }
     }
   }
