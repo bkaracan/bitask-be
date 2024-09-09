@@ -41,13 +41,13 @@ public class RoleDTOMapper {
   public List<RoleDTO> mapList(List<Role> roles) {
     return roles.stream()
         .map(this::convertToDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<Role> convertListToEntity(List<RoleDTO> roleDTOs) {
     return roleDTOs.stream()
         .map(this::convertToEntity)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public RoleDTO mapWithoutObjects(Role role) {
@@ -69,7 +69,7 @@ public class RoleDTOMapper {
     return RoleDTO.builder()
         .id(role.getId())
         .name(role.getName())
-        .userIds(role.getUsers().stream().map(User::getId).collect(Collectors.toList()))  // User Id'leri listeler
+        .userIds(role.getUsers().stream().map(User::getId).toList())  // User Id'leri listeler
         .createdDate(role.getCreatedDate())
         .lastModifiedDate(role.getLastModifiedDate())
         .build();
@@ -78,12 +78,12 @@ public class RoleDTOMapper {
   public List<RoleDTO> mapListWithoutObjects(List<Role> roles) {
     return roles.stream()
         .map(this::mapWithoutObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<RoleDTO> mapListWithObjects(List<Role> roles) {
     return roles.stream()
         .map(this::mapWithObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 }

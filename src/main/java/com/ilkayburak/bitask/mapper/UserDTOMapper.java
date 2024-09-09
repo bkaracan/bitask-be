@@ -28,7 +28,7 @@ public class UserDTOMapper {
         .isEnabled(user.isEnabled())
         .createdDate(user.getCreatedDate())
         .lastModifiedDate(user.getLastModifiedDate())
-        .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+        .roles(user.getRoles().stream().map(Role::getName).toList())
         .build();
   }
 
@@ -51,13 +51,13 @@ public class UserDTOMapper {
   public List<UserDTO> mapList(List<User> users) {
     return users.stream()
         .map(this::convertToDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<User> convertListToEntity(List<UserDTO> userDTOs) {
     return userDTOs.stream()
         .map(this::convertToEntity)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public UserDTO mapWithoutObjects(User user) {
@@ -98,13 +98,13 @@ public class UserDTOMapper {
   public List<UserDTO> mapListWithoutObjects(List<User> users) {
     return users.stream()
         .map(this::mapWithoutObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<UserDTO> mapListWithObjects(List<User> users) {
     return users.stream()
         .map(this::mapWithObjects)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public User mapForRegistration(RegistrationRequestDTO registrationRequestDTO, JobTitle jobTitle) {
