@@ -1,6 +1,7 @@
 package com.ilkayburak.bitask.entity;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class JobTitle {
+public class JobTitle implements Serializable {
 
   @Id
   @SequenceGenerator(name = "JOB_TITLE_ID_GENERATOR", sequenceName = "JOB_TITLE_ID_GEN", allocationSize = 1)
