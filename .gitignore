@@ -33,5 +33,6 @@ build/
 .vscode/
 
 ### PROJECT ###
-*application.yml
+application.yml
+application-test.yml
 
