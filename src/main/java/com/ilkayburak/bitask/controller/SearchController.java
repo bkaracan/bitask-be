@@ -1,6 +1,5 @@
 package com.ilkayburak.bitask.controller;
 
-import com.ilkayburak.bitask.dto.JobTitleDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.service.SearchService;
 import java.util.List;
