@@ -22,10 +22,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Maven ile projeyi build edin
-      - name: Build with Maven
-        run: mvn -B clean install --file pom.xml
-
       # Maven ile testleri çalıştırın
       - name: Run tests with Maven
         run: mvn test
