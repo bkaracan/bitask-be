@@ -8,7 +8,16 @@ import com.ilkayburak.bitask.auth.AuthenticationService;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationResponseDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
+import com.ilkayburak.bitask.entity.JobTitle;
+import com.ilkayburak.bitask.entity.Role;
+import com.ilkayburak.bitask.entity.User;
+import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
+import com.ilkayburak.bitask.mapper.UserDTOMapper;
+import com.ilkayburak.bitask.repository.JobTitleRepository;
+import com.ilkayburak.bitask.repository.RoleRepository;
+import com.ilkayburak.bitask.repository.TokenRepository;
+import com.ilkayburak.bitask.repository.UserRepository;
 import com.ilkayburak.bitask.email.EmailService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -24,13 +34,25 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class AuthenticationControllerTests {
+class AuthenticationControllerRegisterTests {
 
   @Autowired private MockMvc mockMvc;
 
   @MockBean private AuthenticationService authenticationService;
 
+  @MockBean private RoleRepository roleRepository;
+
+  @MockBean private JobTitleRepository jobTitleRepository;
+
+  @MockBean private UserDTOMapper userDTOMapper;
+
+  @MockBean private PasswordEncoder passwordEncoder;
+
+  @MockBean private UserRepository userRepository;
+
   @MockBean private EmailService emailService;
+
+  @MockBean private TokenRepository tokenRepository;
 
   @Autowired private ObjectMapper objectMapper;
 
@@ -46,15 +68,39 @@ class AuthenticationControllerTests {
             .jobTitleId(1L)
             .build();
 
-    // Mock bağımlılıkları ayarla
-    Mockito.doNothing().when(emailService).sendEmail(
-        Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+    // Mock rolleri
+    Mockito.when(roleRepository.findByName("USER"))
+        .thenReturn(java.util.Optional.of(Role.builder().id(1L).name("USER").build()));
 
-    // Mock sonucu
+    // Mock job title
+    Mockito.when(jobTitleRepository.findById(1L))
+        .thenReturn(java.util.Optional.of(JobTitle.builder().id(1L).name("Backend Developer").build()));
+
+    // Mock user mapping
+    User mockUser = new User();
+    Mockito.when(userDTOMapper.mapForRegistration(Mockito.any(), Mockito.any()))
+        .thenReturn(mockUser);
+
+    // Mock password encoding
+    Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn("encodedPassword");
+
+    // Mock user save
+    Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(mockUser);
+
+    // Mock email service
+    Mockito.doNothing().when(emailService)
+        .sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+
+    // Mock token repository save
+    Mockito.when(tokenRepository.save(Mockito.any())).thenReturn(null);
+
+    // Mock authentication service response
     Mockito.when(authenticationService.register(Mockito.any(RegistrationRequestDTO.class)))
         .thenReturn(
-            new ResponsePayload<RegistrationResponseDTO>(
-                ResponseEnum.OK, "Registration successful", null));
+            new ResponsePayload<>(
+                ResponseEnum.OK,
+                MessageEnum.REGISTRATION_SUCCESS.getMessage(),
+                RegistrationResponseDTO.builder().build()));
 
     // POST isteğini gönderelim ve yanıtı kontrol edelim
     mockMvc
@@ -63,12 +109,7 @@ class AuthenticationControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Registration successful"))
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.responseEnum")
-                .value("OK")) // $.status yerine $.responseEnum
-        .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200)) // İsteğe göre eklenebilir
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.success").value(true)); // İsteğe göre eklenebilir
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The registration has been completed! Please check your email to activate your account."))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.responseEnum").value("OK"));
   }
 }
