@@ -28,7 +28,7 @@ class AuthenticationControllerTests {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private AuthenticationService authenticationService;
-
+  
   @Autowired private ObjectMapper objectMapper;
 
   @Test
@@ -57,9 +57,11 @@ class AuthenticationControllerTests {
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Registration successful"))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.responseEnum").value("OK")) // $.status yerine $.responseEnum
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.responseEnum")
+                .value("OK")) // $.status yerine $.responseEnum
         .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200)) // İsteğe göre eklenebilir
-        .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true)); // İsteğe göre eklenebilir
-
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.success").value(true)); // İsteğe göre eklenebilir
   }
 }
