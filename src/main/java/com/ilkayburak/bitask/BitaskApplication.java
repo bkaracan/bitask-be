@@ -21,7 +21,8 @@ public class BitaskApplication {
   }
 
   @Bean
-  public CommandLineRunner runner(RoleRepository roleRepository, JobTitleRepository jobTitleRepository) {
+  public CommandLineRunner runner(
+      RoleRepository roleRepository, JobTitleRepository jobTitleRepository) {
     return args -> {
       if (roleRepository.findByName("USER").isEmpty()) {
         roleRepository.save(Role.builder().name("USER").build());
