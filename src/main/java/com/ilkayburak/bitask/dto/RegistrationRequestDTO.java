@@ -17,36 +17,39 @@ import lombok.Setter;
 @Builder
 public class RegistrationRequestDTO {
 
-    @NotBlank(message = "First name is mandatory!")
-    private String firstName;
+  @NotBlank(message = "First name is mandatory!")
+  private String firstName;
 
-    @NotBlank(message = "Last name is mandatory!")
-    private String lastName;
+  @NotBlank(message = "Last name is mandatory!")
+  private String lastName;
 
-    @Column(unique = true)
-    @NotBlank(message = "e-mail is mandatory!")
-    @Email(message = "email is not formatted!")
-    private String email;
+  @Column(unique = true)
+  @NotBlank(message = "e-mail is mandatory!")
+  @Email(message = "email is not formatted!")
+  private String email;
 
-    @NotBlank(message = "Password is mandatory!")
-    @Size(min = 8, message = "Password must be 8 characters long minimum!")
-    private String password;
+  @NotBlank(message = "Password is mandatory!")
+  @Size(min = 8, message = "Password must be 8 characters long minimum!")
+  private String password;
 
-    @NotNull(message = "Job title id is mandatory!")
-    private Long jobTitleId;
+  @NotNull(message = "Job title id is mandatory!")
+  private Long jobTitleId;
 
-    private LocalDate dateOfBirth;
+  private LocalDate dateOfBirth;
 
-    public String getFormattedName(String name) {
-        String[] words = name.toLowerCase().split(" ");
-        StringBuilder capitalizedStr = new StringBuilder();
+  public String getFormattedName(String name) {
+    String[] words = name.toLowerCase().split(" ");
+    StringBuilder capitalizedStr = new StringBuilder();
 
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                capitalizedStr.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
-            }
-        }
-
-        return capitalizedStr.toString().trim();
+    for (String word : words) {
+      if (!word.isEmpty()) {
+        capitalizedStr
+            .append(word.substring(0, 1).toUpperCase())
+            .append(word.substring(1))
+            .append(" ");
+      }
     }
+
+    return capitalizedStr.toString().trim();
+  }
 }
