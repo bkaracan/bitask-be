@@ -8,17 +8,17 @@ import com.ilkayburak.bitask.auth.AuthenticationService;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationResponseDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
+import com.ilkayburak.bitask.email.EmailService;
 import com.ilkayburak.bitask.entity.JobTitle;
 import com.ilkayburak.bitask.entity.Role;
 import com.ilkayburak.bitask.entity.User;
-import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.mapper.UserDTOMapper;
 import com.ilkayburak.bitask.repository.JobTitleRepository;
 import com.ilkayburak.bitask.repository.RoleRepository;
 import com.ilkayburak.bitask.repository.TokenRepository;
 import com.ilkayburak.bitask.repository.UserRepository;
-import com.ilkayburak.bitask.email.EmailService;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,6 +54,8 @@ class AuthenticationControllerRegisterTests {
   @MockBean private EmailService emailService;
 
   @MockBean private TokenRepository tokenRepository;
+
+  @MockBean private JavaMailSender javaMailSender;
 
   @Autowired private ObjectMapper objectMapper;
 
@@ -87,7 +90,8 @@ class AuthenticationControllerRegisterTests {
     // Mock user save
     Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(mockUser);
 
-    // Mock email service
+    // Mock email service - JavaMailSender bağımlılığıyla birlikte
+    Mockito.doNothing().when(javaMailSender).send((MimeMessage) Mockito.any());  // JavaMailSender send methodunu mockla
     Mockito.doNothing().when(emailService)
         .sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
@@ -99,7 +103,7 @@ class AuthenticationControllerRegisterTests {
         .thenReturn(
             new ResponsePayload<>(
                 ResponseEnum.OK,
-                MessageEnum.REGISTRATION_SUCCESS.getMessage(),
+                "The registration has been completed! Please check your email to activate your account.",
                 RegistrationResponseDTO.builder().build()));
 
     // POST isteğini gönderelim ve yanıtı kontrol edelim
