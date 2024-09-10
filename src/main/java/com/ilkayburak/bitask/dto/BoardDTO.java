@@ -15,27 +15,27 @@ import java.util.List;
 @Builder
 public class BoardDTO {
 
-    private Long id;
-    private String name;
-    private String uniqueId;
-    private LocalDateTime createDate;
-    private UserDTO creator;
-    private List<UserDTO> members;
-    private List<TaskDTO> tasks;
+  private Long id;
+  private String name;
+  private String uniqueId;
+  private LocalDateTime createDate;
+  private UserDTO creator;
+  private List<UserDTO> members;
+  private List<TaskDTO> tasks;
 
-    public static List<Long> getMembersByIdList(List<User> users) {
-        List<Long> members = new ArrayList<>();
-        for (User user : users) {
-            members.add(user.getId());
-        }
-        return members;
+  public static List<Long> getMembersByIdList(List<User> users) {
+    List<Long> members = new ArrayList<>();
+    for (User user : users) {
+      members.add(user.getId());
     }
+    return members;
+  }
 
-    public static List<Long> getTasksByIdList(List<Task> tasks) {
-        List<Long> members = new ArrayList<>();
-        for (Task task : tasks) {
-            members.add(task.getId());
-        }
-        return members;
+  public static List<Long> getTasksByIdList(List<Task> tasks) {
+    List<Long> members = new ArrayList<>();
+    for (Task task : tasks) {
+      members.add(task.getId());
     }
+    return members;
+  }
 }
