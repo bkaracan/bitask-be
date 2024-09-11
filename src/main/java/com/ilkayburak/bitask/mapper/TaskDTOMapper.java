@@ -22,6 +22,8 @@ public class TaskDTOMapper {
                 .status(task.getStatus())
                 .createdDate(task.getCreatedDate())
                 .expectedFinishDate(task.getExpectedFinishDate())
+                .lastModifiedDate(task.getModifiedDate())
+                .updatedBy(new UserDTOMapper().convertToDto(task.getUpdatedBy()))
                 .deadline(task.getDeadline())
                 .board(new BoardDTOMapper().convertToDTO(task.getBoard()))
                 .assignees(new UserDTOMapper().mapList(task.getAssignees()))
@@ -41,6 +43,8 @@ public class TaskDTOMapper {
                 .createdDate(taskDTO.getCreatedDate())
                 .expectedFinishDate(taskDTO.getExpectedFinishDate())
                 .deadline(taskDTO.getDeadline())
+                .modifiedDate(taskDTO.getLastModifiedDate())
+                .updatedBy(new UserDTOMapper().convertToEntity(taskDTO.getUpdatedBy()))
                 .board(new BoardDTOMapper().convertToEntity(taskDTO.getBoard()))
                 .assignees(new UserDTOMapper().convertListToEntity(taskDTO.getAssignees()))
                 .blockingTask(taskDTO.getBlockingTask())
@@ -70,6 +74,7 @@ public class TaskDTOMapper {
                 .createdDate(task.getCreatedDate())
                 .expectedFinishDate(task.getExpectedFinishDate())
                 .deadline(task.getDeadline())
+                .lastModifiedDate(task.getModifiedDate())
                 .blockingTask(task.getBlockingTask())
                 .build();
     }

@@ -21,6 +21,8 @@ public class TaskDTO {
     private Long status;
     private LocalDateTime createdDate;
     private LocalDate expectedFinishDate;
+    private LocalDateTime lastModifiedDate;
+    private UserDTO updatedBy;
     private LocalDate deadline;
     private BoardDTO board;
     private List<UserDTO> assignees;
