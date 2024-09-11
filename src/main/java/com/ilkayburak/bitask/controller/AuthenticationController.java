@@ -3,6 +3,7 @@ package com.ilkayburak.bitask.controller;
 import com.ilkayburak.bitask.auth.AuthenticationService;
 import com.ilkayburak.bitask.dto.AuthenticationRequestDTO;
 import com.ilkayburak.bitask.dto.AuthenticationResponseDTO;
+import com.ilkayburak.bitask.dto.PasswordResetRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationResponseDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
@@ -48,6 +49,16 @@ public class AuthenticationController {
     @GetMapping("/activate-account")
     public ResponsePayload<String> confirm(@RequestParam String token) throws MessagingException {
       return authenticationService.activateAccount(token);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponsePayload<String> forgotPassword(@RequestParam String email) throws MessagingException {
+        return authenticationService.sendResetPasswordCode(email);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponsePayload<String> resetPassword(@RequestParam String token, @RequestBody @Valid PasswordResetRequestDTO passwordResetRequestDTO) {
+        return authenticationService.resetPassword(token, passwordResetRequestDTO);
     }
 
 }
