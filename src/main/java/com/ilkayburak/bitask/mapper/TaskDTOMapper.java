@@ -5,7 +5,6 @@ import com.ilkayburak.bitask.entity.Task;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class TaskDTOMapper {
@@ -27,6 +26,7 @@ public class TaskDTOMapper {
                 .board(new BoardDTOMapper().convertToDTO(task.getBoard()))
                 .assignees(new UserDTOMapper().mapList(task.getAssignees()))
                 .blockingTask(task.getBlockingTask())
+                .sprint(new SprintDTOMapper().convertToDto(task.getSprint()))
                 .build();
     }
 
@@ -44,6 +44,7 @@ public class TaskDTOMapper {
                 .board(new BoardDTOMapper().convertToEntity(taskDTO.getBoard()))
                 .assignees(new UserDTOMapper().convertListToEntity(taskDTO.getAssignees()))
                 .blockingTask(taskDTO.getBlockingTask())
+                .sprint(new SprintDTOMapper().convertToEntity(taskDTO.getSprint()))
                 .build();
     }
 
