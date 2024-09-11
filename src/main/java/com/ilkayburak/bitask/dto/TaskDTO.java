@@ -13,8 +13,8 @@ import java.util.List;
 @Builder
 public class TaskDTO {
 
-    Long id;
-    String keyId;
+    private Long id;
+    private String keyId;
     private String title;
     private String description;
     private Long priority;
@@ -25,5 +25,6 @@ public class TaskDTO {
     private BoardDTO board;
     private List<UserDTO> assignees;
     private Long blockingTask;
+    private SprintDTO sprint;
 
 }
