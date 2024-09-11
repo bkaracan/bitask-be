@@ -2,6 +2,7 @@ package com.ilkayburak.bitask.auth;
 
 import com.ilkayburak.bitask.dto.AuthenticationRequestDTO;
 import com.ilkayburak.bitask.dto.AuthenticationResponseDTO;
+import com.ilkayburak.bitask.dto.PasswordResetRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationRequestDTO;
 import com.ilkayburak.bitask.dto.RegistrationResponseDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
@@ -109,6 +110,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     savedToken.setValidatedAt(LocalDateTime.now());
     tokenRepository.save(savedToken);
     return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.ACTIVATION_SUCCESS.getMessage());
+  }
+
+  @Override
+  public ResponsePayload<String> sendResetPasswordCode(String email) throws MessagingException {
+    var user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("User not found!"));
+
+    String resetCode = generateActivationCode(6);  // 6 haneli reset kodu oluşturuluyor
+
+    // Reset kodunu email olarak gönderiyoruz
+    emailService.sendEmail(
+            user.getEmail(),
+            user.getFirstName(),
+            EmailTemplateNameEnum.RESET_PASSWORD,
+            null,
+            resetCode,
+            "Your Password Reset Code");
+
+    return new ResponsePayload<>(ResponseEnum.OK, "Password reset code has been sent.");
+  }
+
+  @Override
+  public ResponsePayload<String> resetPassword(String token, PasswordResetRequestDTO passwordResetRequestDTO) {
+    Token resetToken = tokenRepository.findByTokenValue(token)
+            .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+    if(LocalDateTime.now().isAfter(resetToken.getExpiredAt())) {
+      throw new RuntimeException("Reset token has expired.");
+    }
+
+    User user = resetToken.getUser();
+    user.setPassword(passwordEncoder.encode(passwordResetRequestDTO.getNewPassword()));
+    userRepository.save(user);
+
+    return  new ResponsePayload<>(ResponseEnum.OK, "Password reset successfully.");
   }
 
   private void sendValidationEmail(User user) throws MessagingException {
