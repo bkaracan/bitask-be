@@ -10,8 +10,7 @@ import lombok.Setter;
 public class CommentsUsersDTO {
 
     private Long id;
-    private Long taskId;
-    private Long boardId;
+    private CommentsDTO comment;
     private UserDTO user;
 
 }

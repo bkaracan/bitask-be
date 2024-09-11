@@ -15,8 +15,7 @@ public class CommentsUsersDTOMapper {
         }
         return CommentsUsersDTO.builder()
                 .id(commentsUsers.getId())
-                .taskId(commentsUsers.getTaskId())
-                .boardId(commentsUsers.getBoardId())
+                .comment(new CommentsDTOMapper().convertToDto(commentsUsers.getComment()))
                 .user(new UserDTOMapper().convertToDto(commentsUsers.getTaggedUser()))
                 .build();
     }
@@ -27,8 +26,7 @@ public class CommentsUsersDTOMapper {
         }
         return CommentsUsers.builder()
                 .id(commentsUsersDTO.getId())
-                .taskId(commentsUsersDTO.getTaskId())
-                .boardId(commentsUsersDTO.getBoardId())
+                .comment(new CommentsDTOMapper().convertToEntity(commentsUsersDTO.getComment()))
                 .taggedUser(new UserDTOMapper().convertToEntity(commentsUsersDTO.getUser()))
                 .build();
     }
@@ -39,21 +37,6 @@ public class CommentsUsersDTOMapper {
 
     public List<CommentsUsers> mapListToEntity(List<CommentsUsersDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
-    }
-
-    public CommentsUsersDTO mapWithoutObject(CommentsUsers commentsUsers) {
-        if (commentsUsers == null) {
-            return null;
-        }
-        return CommentsUsersDTO.builder()
-                .id(commentsUsers.getId())
-                .taskId(commentsUsers.getTaskId())
-                .boardId(commentsUsers.getBoardId())
-                .build();
-    }
-
-    public List<CommentsUsersDTO> mapListWithoutObject(List<CommentsUsers> list) {
-        return list.stream().map(this::convertToDto).toList();
     }
 
 }

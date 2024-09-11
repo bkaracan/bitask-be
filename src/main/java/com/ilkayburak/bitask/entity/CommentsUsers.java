@@ -22,11 +22,9 @@ public class CommentsUsers implements Serializable {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "task_id")
-    private Long taskId;
-
-    @Column(name = "board_id")
-    private Long boardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id", nullable = false)
+    private Comments comment;
 
     @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "tagged_user")
