@@ -3,6 +3,7 @@ package com.ilkayburak.bitask.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -39,6 +40,13 @@ public class Task {
 
     private LocalDate expectedFinishDate;
     private LocalDate deadline;
+
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "updated_by_user_id")
+    private User updatedBy;
 
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
