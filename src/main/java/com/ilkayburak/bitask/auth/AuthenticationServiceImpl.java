@@ -136,7 +136,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
 
     if(LocalDateTime.now().isAfter(resetToken.getExpiredAt())) {
-      throw new RuntimeException("Reset token has expired.");
+      throw new TokenExpiredException("Reset token has expired.");
     }
 
     User user = resetToken.getUser();
