@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import jakarta.mail.MessagingException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -113,21 +114,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public ResponsePayload<String> sendResetPasswordCode(String email) throws MessagingException {
+  public ResponsePayload<String> sendResetPasswordCode(String email, String resetCode) throws MessagingException {
+    // Kullanıcının email adresine göre bilgilerini çekiyoruz
     var user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("User not found!"));
 
-    String resetCode = generateActivationCode(6);  // 6 haneli reset kodu oluşturuluyor
+    // Eğer resetCode boş ise, yani kullanıcı kod talep etmişse, yeni bir kod oluşturup gönder
+    if (resetCode == null) {
+      // 6 haneli reset kodunu oluştur ve veritabanına kaydet
+      String generatedResetCode = generateAndSaveActivationToken(user);
 
-    // Reset kodunu email olarak gönderiyoruz
-    emailService.sendEmail(
-            user.getEmail(),
-            user.getFirstName(),
-            EmailTemplateNameEnum.RESET_PASSWORD,
-            null,
-            resetCode,
-            "Your Password Reset Code");
+      // Reset kodunu e-posta ile gönder
+      emailService.sendEmail(
+          user.getEmail(),
+          user.getFirstName(),
+          EmailTemplateNameEnum.RESET_PASSWORD,
+          null,
+          generatedResetCode,
+          "Your Password Reset Code");
 
-    return new ResponsePayload<>(ResponseEnum.OK, "Password reset code has been sent.");
+      // Başarılı bir şekilde kod gönderildiğini bildiriyoruz
+      return new ResponsePayload<>(ResponseEnum.OK, "Password reset code has been sent to your email.");
+    }
+    // Eğer resetCode dolu ise, yani kullanıcı kodu girip doğrulamak istiyorsa
+    else {
+      // Reset kodunu veritabanından tokenValue ile arıyoruz
+      Optional<Token> resetTokenOptional = tokenRepository.findByTokenValue(resetCode);
+
+      // Eğer token bulunamazsa hata fırlatıyoruz
+      Token resetToken = resetTokenOptional.orElseThrow(() -> new IllegalStateException("Reset code not found!"));
+
+      // Kodun geçerliliğini kontrol et (kod doğru mu ve süresi dolmamış mı)
+      if (resetToken.getTokenValue().equals(resetCode) && LocalDateTime.now().isBefore(resetToken.getExpiredAt())) {
+        // Kod doğrulandı, şifre sıfırlama ekranına yönlendirebilirsin
+        return new ResponsePayload<>(ResponseEnum.OK, "Reset code verified successfully.");
+      } else {
+        // Kod yanlış veya süresi dolmuş
+        return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.BAD_CREDENTIALS.getMessage(), "Incorrect or expired reset code.");
+      }
+    }
   }
 
   @Override
@@ -143,7 +167,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setPassword(passwordEncoder.encode(passwordResetRequestDTO.getNewPassword()));
     userRepository.save(user);
 
-    return  new ResponsePayload<>(ResponseEnum.OK, "Password reset successfully.");
+    return  new ResponsePayload<>(ResponseEnum.OK, "Password has been reset successfully.");
   }
 
   private void sendValidationEmail(User user) throws MessagingException {

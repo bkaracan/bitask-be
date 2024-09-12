@@ -16,7 +16,7 @@ public interface AuthenticationService {
 
     ResponsePayload<String> activateAccount(String token) throws MessagingException;
 
-    ResponsePayload<String> sendResetPasswordCode(String email) throws MessagingException;
+    ResponsePayload<String> sendResetPasswordCode(String email, String resetCode) throws MessagingException;
 
     ResponsePayload<String> resetPassword(String token, PasswordResetRequestDTO passwordResetRequestDTO);
 }
