@@ -20,13 +20,11 @@ import com.ilkayburak.bitask.repository.RoleRepository;
 import com.ilkayburak.bitask.repository.TokenRepository;
 import com.ilkayburak.bitask.repository.UserRepository;
 import com.ilkayburak.bitask.security.JwtService;
+import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-
-import jakarta.mail.MessagingException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -114,45 +112,55 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public ResponsePayload<String> sendResetPasswordCode(String email, String resetCode) throws MessagingException {
-    // Kullanıcının email adresine göre bilgilerini çekiyoruz
-    var user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("User not found!"));
+  @Transactional
+  public ResponsePayload<String> sendResetPasswordCode(String email, String token) {
+    try {
+      var user = userRepository.findByEmail(email)
+          .orElseThrow(() -> new IllegalStateException("User not found!"));
 
-    // Eğer resetCode boş ise, yani kullanıcı kod talep etmişse, yeni bir kod oluşturup gönder
-    if (resetCode == null) {
-      // 6 haneli reset kodunu oluştur ve veritabanına kaydet
-      String generatedResetCode = generateAndSaveActivationToken(user);
+      if (token == null) {
+        String generatedResetCode = generateAndSaveActivationToken(user);
 
-      // Reset kodunu e-posta ile gönder
-      emailService.sendEmail(
-          user.getEmail(),
-          user.getFirstName(),
-          EmailTemplateNameEnum.RESET_PASSWORD,
-          null,
-          generatedResetCode,
-          "Your Password Reset Code");
+        emailService.sendEmail(
+            user.getEmail(),
+            user.getFirstName(),
+            EmailTemplateNameEnum.RESET_PASSWORD,
+            null,
+            generatedResetCode,
+            "Your Password Reset Code");
 
-      // Başarılı bir şekilde kod gönderildiğini bildiriyoruz
-      return new ResponsePayload<>(ResponseEnum.OK, "Password reset code has been sent to your email.");
-    }
-    // Eğer resetCode dolu ise, yani kullanıcı kodu girip doğrulamak istiyorsa
-    else {
-      // Reset kodunu veritabanından tokenValue ile arıyoruz
-      Optional<Token> resetTokenOptional = tokenRepository.findByTokenValue(resetCode);
-
-      // Eğer token bulunamazsa hata fırlatıyoruz
-      Token resetToken = resetTokenOptional.orElseThrow(() -> new IllegalStateException("Reset code not found!"));
-
-      // Kodun geçerliliğini kontrol et (kod doğru mu ve süresi dolmamış mı)
-      if (resetToken.getTokenValue().equals(resetCode) && LocalDateTime.now().isBefore(resetToken.getExpiredAt())) {
-        // Kod doğrulandı, şifre sıfırlama ekranına yönlendirebilirsin
-        return new ResponsePayload<>(ResponseEnum.OK, "Reset code verified successfully.");
+        return new ResponsePayload<>(ResponseEnum.OK, "Password reset code has been sent to your email.");
       } else {
-        // Kod yanlış veya süresi dolmuş
-        return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.BAD_CREDENTIALS.getMessage(), "Incorrect or expired reset code.");
+        Token savedToken = tokenRepository.findByTokenValue(token)
+            .orElseThrow(() -> new InvalidTokenException("Reset code not found!"));
+
+        if (LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
+          // Optionally send a new code
+          String newResetCode = generateAndSaveActivationToken(user);
+          emailService.sendEmail(
+              user.getEmail(),
+              user.getFirstName(),
+              EmailTemplateNameEnum.RESET_PASSWORD,
+              null,
+              newResetCode,
+              "Your Password Reset Code");
+
+          return new ResponsePayload<>(ResponseEnum.ERROR, "Reset code has expired. A new code has been sent to your email.");
+        }
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
+
+        return new ResponsePayload<>(ResponseEnum.OK, "Reset code verified successfully.");
       }
+    } catch (InvalidTokenException e) {
+      return new ResponsePayload<>(ResponseEnum.ERROR, "Invalid reset code.");
+    } catch (Exception e) {
+      return new ResponsePayload<>(ResponseEnum.ERROR, "An unexpected error occurred.");
     }
   }
+
+
 
   @Override
   public ResponsePayload<String> resetPassword(String token, PasswordResetRequestDTO passwordResetRequestDTO) {
