@@ -18,5 +18,5 @@ public interface AuthenticationService {
 
     ResponsePayload<String> sendResetPasswordCode(String email, String resetCode) throws MessagingException;
 
-    ResponsePayload<String> resetPassword(String token, PasswordResetRequestDTO passwordResetRequestDTO);
+    ResponsePayload<String> resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 }

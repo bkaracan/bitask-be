@@ -15,6 +15,8 @@ import lombok.Setter;
 @Builder
 public class PasswordResetRequestDTO {
 
+    private String email;
+
     @NotBlank(message = "Password is mandatory!")
     @Size(min = 8, message = "Password must be 8 characters long minimum")
     private String newPassword;
