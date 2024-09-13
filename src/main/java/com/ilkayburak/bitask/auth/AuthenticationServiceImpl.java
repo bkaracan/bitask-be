@@ -23,9 +23,12 @@ import com.ilkayburak.bitask.security.JwtService;
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
   private final UserDTOMapper userDTOMapper;
+  private final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
   public ResponsePayload<RegistrationResponseDTO> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
@@ -163,20 +167,51 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
   @Override
-  public ResponsePayload<String> resetPassword(String token, PasswordResetRequestDTO passwordResetRequestDTO) {
-    Token resetToken = tokenRepository.findByTokenValue(token)
-            .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+  @Transactional
+  public ResponsePayload<String> resetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
 
-    if(LocalDateTime.now().isAfter(resetToken.getExpiredAt())) {
-      throw new TokenExpiredException("Reset token has expired.");
+    // Aynı email adresine sahip tüm token'leri bul ve son oluşturulanı seç
+    List<Token> resetTokens = tokenRepository.findByUserEmail(passwordResetRequestDTO.getEmail());
+
+    if (resetTokens.isEmpty()) {
+      throw new InvalidTokenException("Invalid or expired token");
     }
 
+    // En güncel token'i seçiyoruz (örn: en son oluşturulan)
+    Token resetToken = resetTokens.stream()
+        .max(Comparator.comparing(Token::getCreatedAt))
+        .orElseThrow(() -> new InvalidTokenException("Invalid or expired token"));
+
+    // Token'ın süresinin dolup dolmadığını kontrol edin
+    if (LocalDateTime.now().isAfter(resetToken.getExpiredAt())) {
+      return new ResponsePayload<>(ResponseEnum.ERROR, "Reset token has expired. Please request a new password reset.");
+    }
+
+    // Şifre doğrulama - sunucu tarafında şifrenin kurallara uygun olup olmadığını kontrol edin
+    String newPassword = passwordResetRequestDTO.getNewPassword();
+    if (!isValidPassword(newPassword)) {
+      return new ResponsePayload<>(ResponseEnum.BADREQUEST, "Password does not meet the requirements.");
+    }
+
+    // Kullanıcının şifresini güncelleyin
     User user = resetToken.getUser();
-    user.setPassword(passwordEncoder.encode(passwordResetRequestDTO.getNewPassword()));
+    user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
 
-    return  new ResponsePayload<>(ResponseEnum.OK, "Password has been reset successfully.");
+    // Şifre sıfırlama işlemi tamamlandıktan sonra o kullanıcıya ait tüm token'leri silin
+    tokenRepository.deleteAll(resetTokens);
+
+    // JWT token oluştur (jwtService kullanarak)
+    var claims = new HashMap<String, Object>();
+    claims.put("fullName", user.fullName());
+    String jwtToken = jwtService.generateToken(claims, user);
+
+    // Başarı mesajı ile birlikte JWT token'ı döndür
+    return new ResponsePayload<>(ResponseEnum.OK, "Password has been reset successfully. Use the new token to login.", jwtToken);
   }
+
+
+
 
   private void sendValidationEmail(User user) throws MessagingException {
     var newToken = generateAndSaveActivationToken(user);
@@ -191,17 +226,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   private String generateAndSaveActivationToken(User user) {
+    // Aynı kullanıcıya ait eski token varsa silin
+    List<Token> existingTokens = tokenRepository.findByUser(user);
+    if (!existingTokens.isEmpty()) {
+      tokenRepository.deleteAll(existingTokens);
+    }
+
+    // Yeni token oluştur ve kaydet
     String generatedToken = generateActivationCode(6);
-    var token =
-        Token.builder()
-            .tokenValue(generatedToken)
-            .createdAt(LocalDateTime.now())
-            .expiredAt(LocalDateTime.now().plusMinutes(15))
-            .user(user)
-            .build();
+    var token = Token.builder()
+        .tokenValue(generatedToken)
+        .createdAt(LocalDateTime.now())
+        .expiredAt(LocalDateTime.now().plusMinutes(15)) // 15 dakika geçerli
+        .user(user)
+        .build();
+
     tokenRepository.save(token);
     return generatedToken;
   }
+
 
   private String generateActivationCode(int length) {
     String characters = "0123456789";
@@ -212,5 +255,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       codeBuilder.append(characters.charAt(randomIndex));
     }
     return codeBuilder.toString();
+  }
+
+  private boolean isValidPassword(String password) {
+    return password.length() >= 8 &&
+        password.matches("^(?=.*[A-Z])(?=.*[!@#$%&*()_+=|<>?{}\\[\\]~-]).*$");
   }
 }

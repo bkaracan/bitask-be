@@ -57,8 +57,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset-password")
-    public ResponsePayload<String> resetPassword(@RequestParam String token, @RequestBody @Valid PasswordResetRequestDTO passwordResetRequestDTO) {
-        return authenticationService.resetPassword(token, passwordResetRequestDTO);
+    public ResponsePayload<String> resetPassword(@RequestBody @Valid PasswordResetRequestDTO passwordResetRequestDTO) {
+        return authenticationService.resetPassword(passwordResetRequestDTO);
     }
 
 }
