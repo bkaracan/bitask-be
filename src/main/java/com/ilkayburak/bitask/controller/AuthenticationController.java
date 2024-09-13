@@ -52,8 +52,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponsePayload<String> forgotPassword(@RequestParam String email, @RequestParam(required = false) String resetCode) throws MessagingException {
-        return authenticationService.sendResetPasswordCode(email, resetCode);
+    public ResponsePayload<String> forgotPassword(@RequestParam String email, @RequestParam(required = false) String token) throws MessagingException {
+        return authenticationService.sendResetPasswordCode(email, token);
     }
 
     @PostMapping("/reset-password")
