@@ -187,6 +187,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       return new ResponsePayload<>(ResponseEnum.ERROR, "Reset token has expired. Please request a new password reset.");
     }
 
+    // Kullanıcıyı alıyoruz
+    User user = resetToken.getUser();
+
+    // Mevcut şifre ile yeni şifreyi karşılaştırın
+    if (passwordEncoder.matches(passwordResetRequestDTO.getNewPassword(), user.getPassword())) {
+      return new ResponsePayload<>(ResponseEnum.BADREQUEST, "New password cannot be the same as your current password.");
+    }
+
     // Şifre doğrulama - sunucu tarafında şifrenin kurallara uygun olup olmadığını kontrol edin
     String newPassword = passwordResetRequestDTO.getNewPassword();
     if (!isValidPassword(newPassword)) {
@@ -194,7 +202,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     // Kullanıcının şifresini güncelleyin
-    User user = resetToken.getUser();
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
 
