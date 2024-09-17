@@ -9,7 +9,9 @@ public interface TaskService {
 
     ResponsePayload<TaskDTO> save(TaskDTO taskDTO);
     ResponsePayload<TaskDTO> getById(Long id);
+    ResponsePayload<TaskDTO> getByKeyIdAndBoardId(String keyId, Long boardId);
     ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId);
     ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndBoardId(Long status, Long boardId);
+    ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndUserId(Long status, Long userId);
 
 }
