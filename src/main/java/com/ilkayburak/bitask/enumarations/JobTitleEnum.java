@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum JobTitleEnum {
   BACKEND_DEVELOPER(1L, "Backend Developer"),
   FRONTEND_DEVEOPER(2L, "Frontend Developer"),
-  BUSINESS_ANALYST(3L, "Business Analysit"),
+  BUSINESS_ANALYST(3L, "Business Analyst"),
   DEVOPS(4L, "Devops"),
   QA_ENGINEER(5L, "Q&A Engineer"),
   SOFTWARE_ARCHITECTURE(6L, "Software Architecture");
