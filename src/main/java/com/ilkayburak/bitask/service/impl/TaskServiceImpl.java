@@ -57,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId) {
-        List<Task> tasks = repository.findAllByBoardId(boardId);
+        List<Task> tasks = repository.findAllByBoard_Id(boardId);
         if (!tasks.isEmpty()) {
             return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(tasks));
         }
@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndBoardId(Long status, Long boardId) {
-        List<Task> tasks = repository.findAllByBoardIdAndStatus(boardId, status);
+        List<Task> tasks = repository.findAllByBoard_IdAndStatus(boardId, status);
         if (!tasks.isEmpty()) {
             return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(tasks));
         }
