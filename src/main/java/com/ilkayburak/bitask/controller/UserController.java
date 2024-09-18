@@ -2,15 +2,11 @@ package com.ilkayburak.bitask.controller;
 
 import com.ilkayburak.bitask.dto.UserDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
-import com.ilkayburak.bitask.entity.User;
-import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.mapper.UserDTOMapper;
 import com.ilkayburak.bitask.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
