@@ -26,8 +26,7 @@ public class UserController {
     @GetMapping("/getCurrentUser")
     @Operation(summary = "Return the current user")
     public ResponsePayload<UserDTO> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDto((User) authentication.getPrincipal()));
+        return userService.getCurrentUser();
     }
 
     @GetMapping("/getUserById")
