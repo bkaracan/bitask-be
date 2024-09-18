@@ -10,6 +10,8 @@ import com.ilkayburak.bitask.repository.UserRepository;
 import com.ilkayburak.bitask.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +31,12 @@ public class UserServiceImpl implements UserService {
             return new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDto(user.get()));
         }
         return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+    }
+
+    @Override
+    public ResponsePayload<UserDTO> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDto((User) authentication.getPrincipal()));
     }
 
     @Override
