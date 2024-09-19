@@ -41,4 +41,10 @@ public class BoardController {
         return boardService.getAllBoardsByCreator(id);
     }
 
+    @DeleteMapping("/deleteById")
+    @Operation(summary = "Delete a board by ID")
+    public ResponsePayload<Void> deleteById(@RequestParam Long id) {
+        return boardService.deleteById(id);
+    }
+
 }

@@ -81,4 +81,14 @@ public class TaskServiceImpl implements TaskService {
         }
         return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST.getMessage());
     }
+
+    @Override
+    public ResponsePayload<Void> deleteById(Long id) {
+        Optional<Task> task = repository.findById(id);
+        if (task.isPresent()) {
+            repository.deleteById(id);
+            return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.DELETE_SUCCESS.getMessage());
+        }
+        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+    }
 }

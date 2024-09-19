@@ -11,5 +11,6 @@ public interface BoardService {
     ResponsePayload<BoardDTO> getById(Long id);
     ResponsePayload<List<BoardDTO>> getAllBoardsForUser(Long id);
     ResponsePayload<List<BoardDTO>> getAllBoardsByCreator(Long id);
+    ResponsePayload<Void> deleteById(Long id);
 
 }
