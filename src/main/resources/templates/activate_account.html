@@ -2,15 +2,99 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activate your account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #333;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            padding: 0;
+            margin: 40px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .navbar {
+            background-color: #1B262C;
+            color: #00ff87;
+            padding: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .content {
+            padding: 40px 20px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .activation-code {
+            display: inline-block;
+            background-color: #1B262C;
+            color: #00ff87;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            box-shadow: 0 0 8px rgba(0, 255, 135, 0.5);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+
+            .navbar {
+                font-size: 22px;
+                padding: 15px 0;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .activation-code {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; text-align: center;">
-<div style="background-color: #ffffff; padding: 20px; margin: 20px auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); max-width: 600px;">
-    <h2 style="color: #333333;">Hi there <span th:text="${username} + ','"></span></h2>
-    <p style="font-size: 18px; font-weight: bold; color: #333333;">Your activation code: <span class="activation-code" th:text="${activation_code}">XXXXXX</span></p>
-    <p style="color: #666666;">This code will expire in 15 minutes.</p>
-    <div style="margin-top: 20px; font-size: 14px; color: #aaaaaa;">
-        <p>Thanks,<br/>Bitask Team</p>
+<body>
+<div class="email-container">
+    <div class="navbar">
+        Hello, <span th:text="${username}">Name Surname</span>
+    </div>
+    <div class="content">
+        <p>We’re excited to have you on board! To complete your account activation, please use the code below:</p>
+        <p class="activation-code" th:text="${activation_code}">XXXXXX</p>
+        <p>This code will expire in 15 minutes. Please don’t hesitate to contact us if you need any assistance.</p>
+        <div class="footer">
+            <p>Thanks for joining,<br/>The Bitask Team</p>
+        </div>
     </div>
 </div>
 </body>
