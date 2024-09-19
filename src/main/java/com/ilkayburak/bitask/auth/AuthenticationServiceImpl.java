@@ -54,6 +54,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   public ResponsePayload<RegistrationResponseDTO> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
+
+    // Eğer email zaten kayıtlıysa, BADREQUEST ve hata mesajı döndürüyoruz.
+    if (userRepository.existsByEmail(registrationRequestDTO.getEmail())) {
+      return new ResponsePayload<>(
+              ResponseEnum.BADREQUEST, // ResponseEnum değeri
+              MessageEnum.EMAIL_ALREADY_EXISTS.getMessage(), // Özel hata mesajı
+              false, // Success flag: Bu bir hata olduğundan false
+              null, // Data: Hata durumunda data döndürülmüyor
+              true // showNotification: Hatanın bildirilmesi gerektiğini belirtiyor
+      );
+    }
     var userRole =
         roleRepository
             .findByName("USER")

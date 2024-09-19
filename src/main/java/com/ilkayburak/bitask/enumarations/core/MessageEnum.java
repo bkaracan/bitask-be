@@ -22,7 +22,8 @@ public enum MessageEnum {
     ACCOUNT_LOCKED(14, "User account is locked!"),
     ACCOUNT_DISABLED(15, "User account is disabled!"),
     BAD_CREDENTIALS(16, "Email and/or password is incorrect!"),
-    RETRIEVE_SUCCESS(17, "Data retrieved successfully!");
+    RETRIEVE_SUCCESS(17, "Data retrieved successfully!"),
+    EMAIL_ALREADY_EXISTS(18, "Email already exists!");
 
 
 
