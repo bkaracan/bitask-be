@@ -30,7 +30,7 @@ public class BoardServiceImpl implements BoardService {
                     mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
         }
         return new ResponsePayload<>(ResponseEnum.OK, "Board updated successfully",
-                mapper.convertToDTO(boardRepository.save(board.get())));
+                mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
     }
 
     @Override
@@ -58,5 +58,15 @@ public class BoardServiceImpl implements BoardService {
             return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(boards));
         }
         return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST.getMessage());
+    }
+
+    @Override
+    public ResponsePayload<Void> deleteById(Long id) {
+        Optional<Board> board = boardRepository.findById(id);
+        if (board.isPresent()) {
+            boardRepository.deleteById(id);
+            return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.DELETE_SUCCESS.getMessage());
+        }
+        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
     }
 }

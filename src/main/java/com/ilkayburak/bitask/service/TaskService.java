@@ -13,5 +13,6 @@ public interface TaskService {
     ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId);
     ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndBoardId(Long status, Long boardId);
     ResponsePayload<List<TaskDTO>> getAllTaskByStatusAndUserId(Long status, Long userId);
+    ResponsePayload<Void> deleteById(Long id);
 
 }

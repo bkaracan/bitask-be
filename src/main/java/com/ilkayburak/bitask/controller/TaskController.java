@@ -59,4 +59,10 @@ public class TaskController {
         return taskService.getAllTaskByStatusAndUserId(status, userId);
     }
 
+    @DeleteMapping("/deleteById")
+    @Operation(summary = "Delete a task by ID")
+    ResponsePayload<Void> deleteById(@RequestParam Long id) {
+        return taskService.deleteById(id);
+    }
+
 }
