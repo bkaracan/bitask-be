@@ -96,6 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var claims = new HashMap<String, Object>();
     var user = ((User) auth.getPrincipal());
     claims.put("fullName", user.fullName());
+    claims.put("jobTitle", user.getJobTitle().getName());
     var jwtoken = jwtService.generateToken(claims, user);
     return new ResponsePayload<>(
         ResponseEnum.OK,
