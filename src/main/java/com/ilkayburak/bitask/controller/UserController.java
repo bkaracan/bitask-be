@@ -2,7 +2,6 @@ package com.ilkayburak.bitask.controller;
 
 import com.ilkayburak.bitask.dto.UserDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
-import com.ilkayburak.bitask.mapper.UserDTOMapper;
 import com.ilkayburak.bitask.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserDTOMapper mapper;
 
     @GetMapping("/getCurrentUser")
     @Operation(summary = "Return the current user")
