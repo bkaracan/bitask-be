@@ -3,14 +3,12 @@ package com.ilkayburak.bitask.controller;
 import com.ilkayburak.bitask.dto.UpdateUserStatusRequestDTO;
 import com.ilkayburak.bitask.dto.UserDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
-import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("user")
