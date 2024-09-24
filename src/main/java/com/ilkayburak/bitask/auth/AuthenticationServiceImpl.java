@@ -100,6 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     claims.put("fullName", user.fullName());
     claims.put("jobTitle", user.getJobTitle().getName());
     user.setUserStatus(userStatusRepository.findById(1L).orElseThrow(IllegalAccessError::new));
+    claims.put("userStatus", user.getUserStatus().getName());
     userRepository.save(user);
     var jwtoken = jwtService.generateToken(claims, user);
     return new ResponsePayload<>(

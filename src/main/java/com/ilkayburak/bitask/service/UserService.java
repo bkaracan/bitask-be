@@ -7,9 +7,13 @@ import java.util.List;
 
 public interface UserService {
 
-    ResponsePayload<UserDTO> getById(Long id);
-    ResponsePayload<UserDTO> getCurrentUser();
-    ResponsePayload<UserDTO> getByEmail(String email);
-    ResponsePayload<List<UserDTO>> getAllUsers();
+  ResponsePayload<UserDTO> getById(Long id);
 
+  ResponsePayload<UserDTO> getCurrentUser();
+
+  ResponsePayload<UserDTO> getByEmail(String email);
+
+  ResponsePayload<List<UserDTO>> getAllUsers();
+
+  ResponsePayload<String> updateUserStatus(String status);
 }

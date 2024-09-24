@@ -21,4 +21,9 @@ public class SearchController {
         return searchService.getAllJobTitles();
     }
 
+    @GetMapping("/getAllUserStatus")
+    public ResponsePayload<List<String>> getAllUserStatus() {
+        return searchService.getAllUserStatus();
+    }
+
 }

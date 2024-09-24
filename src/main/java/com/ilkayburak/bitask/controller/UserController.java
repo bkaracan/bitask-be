@@ -1,7 +1,9 @@
 package com.ilkayburak.bitask.controller;
 
+import com.ilkayburak.bitask.dto.UpdateUserStatusRequestDTO;
 import com.ilkayburak.bitask.dto.UserDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
+import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,11 @@ public class UserController {
     @Operation(summary = "Get all users")
     public ResponsePayload<List<UserDTO>> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @PutMapping("/updateStatus")
+    public ResponsePayload<String> updateUserStatus(@RequestBody UpdateUserStatusRequestDTO request) {
+        return userService.updateUserStatus(request.getStatus());
     }
 
 }

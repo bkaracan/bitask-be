@@ -7,4 +7,5 @@ public interface SearchService {
 
     ResponsePayload<List<String>> getAllJobTitles();
 
+    ResponsePayload<List<String>> getAllUserStatus();
 }
