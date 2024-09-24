@@ -45,6 +45,10 @@ public class User implements UserDetails, Principal {
     @JoinColumn(name = "job_title_id")
     private JobTitle jobTitle;
 
+    @ManyToOne
+    @JoinColumn(name = "user_status_id")
+    private UserStatus userStatus;
+
     private boolean isAccountLocked;
 
     private boolean isEnabled;

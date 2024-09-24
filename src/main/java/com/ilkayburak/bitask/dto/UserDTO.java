@@ -19,6 +19,7 @@ public class UserDTO {
   private String email;
   private String password;
   private JobTitleDTO jobTitle;
+  private UserStatusDTO userStatus;
   private boolean isAccountLocked;
   private boolean isEnabled;
   private LocalDateTime createdDate;

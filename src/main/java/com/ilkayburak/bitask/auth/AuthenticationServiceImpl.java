@@ -15,10 +15,7 @@ import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.exception.InvalidTokenException;
 import com.ilkayburak.bitask.exception.TokenExpiredException;
 import com.ilkayburak.bitask.mapper.UserDTOMapper;
-import com.ilkayburak.bitask.repository.JobTitleRepository;
-import com.ilkayburak.bitask.repository.RoleRepository;
-import com.ilkayburak.bitask.repository.TokenRepository;
-import com.ilkayburak.bitask.repository.UserRepository;
+import com.ilkayburak.bitask.repository.*;
 import com.ilkayburak.bitask.security.JwtService;
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
@@ -46,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final UserRepository userRepository;
   private final TokenRepository tokenRepository;
   private final JobTitleRepository jobTitleRepository;
+  private final UserStatusRepository userStatusRepository;
   private final EmailService emailService;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
@@ -74,8 +72,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         jobTitleRepository
             .findById(registrationRequestDTO.getJobTitleId())
             .orElseThrow(() -> new IllegalStateException("Job title not found!"));
+    // UserStatusId ile UserStatus entity'sini buluyoruz
+    var userStatus =
+            userStatusRepository
+                    .findById(4L).orElseThrow(() -> new IllegalStateException("User status not found!"));
     // Mapper sınıfında User entity'sini oluşturuyoruz
-    var user = userDTOMapper.mapForRegistration(registrationRequestDTO, jobTitle);
+    var user = userDTOMapper.mapForRegistration(registrationRequestDTO, jobTitle, userStatus);
     user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreyi encode ediyoruz
     user.setRoles(List.of(userRole));
     userRepository.save(user);
@@ -97,6 +99,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var user = ((User) auth.getPrincipal());
     claims.put("fullName", user.fullName());
     claims.put("jobTitle", user.getJobTitle().getName());
+    user.setUserStatus(userStatusRepository.findById(1L).orElseThrow(IllegalAccessError::new));
+    userRepository.save(user);
     var jwtoken = jwtService.generateToken(claims, user);
     return new ResponsePayload<>(
         ResponseEnum.OK,
