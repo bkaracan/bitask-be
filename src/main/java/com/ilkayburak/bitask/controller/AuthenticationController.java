@@ -11,10 +11,13 @@ import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -59,6 +62,11 @@ public class AuthenticationController {
     @PostMapping("/reset-password")
     public ResponsePayload<String> resetPassword(@RequestBody @Valid PasswordResetRequestDTO passwordResetRequestDTO) {
         return authenticationService.resetPassword(passwordResetRequestDTO);
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        authenticationService.logout(request, response, authentication);
     }
 
 }
