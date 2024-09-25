@@ -29,7 +29,7 @@ public class Token {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "token_value")
+    @Column(name = "token_value", length = 2048)
     private String tokenValue;
 
     private LocalDateTime createdAt;
@@ -37,6 +37,10 @@ public class Token {
     private LocalDateTime expiredAt;
 
     private LocalDateTime validatedAt;
+
+    private boolean isRevoked;
+
+    private boolean isExpired;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)

@@ -10,6 +10,7 @@ import com.ilkayburak.bitask.email.EmailService;
 import com.ilkayburak.bitask.entity.Token;
 import com.ilkayburak.bitask.entity.User;
 import com.ilkayburak.bitask.enumarations.EmailTemplateNameEnum;
+import com.ilkayburak.bitask.enumarations.UserStatusEnum;
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.exception.InvalidTokenException;
@@ -18,6 +19,8 @@ import com.ilkayburak.bitask.mapper.UserDTOMapper;
 import com.ilkayburak.bitask.repository.*;
 import com.ilkayburak.bitask.security.JwtService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -29,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,11 +106,54 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setUserStatus(userStatusRepository.findById(1L).orElseThrow(IllegalAccessError::new));
     claims.put("userStatus", user.getUserStatus().getName());
     userRepository.save(user);
-    var jwtoken = jwtService.generateToken(claims, user);
+    var jwttoken = jwtService.generateToken(claims, user);
+    // Token entity'si oluşturuyoruz ve kaydediyoruz
+    var token = new Token();
+    token.setTokenValue(jwttoken);
+    token.setCreatedAt(LocalDateTime.now());
+    token.setExpiredAt(LocalDateTime.now().plusMinutes(30));  // Token geçerlilik süresi
+    token.setUser(user);
+    token.setExpired(false);
+    token.setRevoked(false);
+    if (token.getValidatedAt() == null) {
+      token.setValidatedAt(LocalDateTime.now());
+    }
+
+    // Token'ı veritabanına kaydediyoruz
+    tokenRepository.save(token);
     return new ResponsePayload<>(
         ResponseEnum.OK,
         MessageEnum.AUTHENTICATED.getMessage(),
-        AuthenticationResponseDTO.builder().token(jwtoken).build());
+        AuthenticationResponseDTO.builder().token(jwttoken).build());
+  }
+
+  @Override
+  public void logout(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+
+    final String authHeader = request.getHeader("Authorization");
+    final String jwt;
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      return;
+    }
+    jwt = authHeader.substring(7);
+    var storedToken = tokenRepository.findByTokenValue(jwt)
+        .orElse(null);
+    if(storedToken != null) {
+      storedToken.setExpired(true);
+      storedToken.setRevoked(true);
+      tokenRepository.save(storedToken);
+
+      // Kullanıcıyı alıyoruz
+      var user = storedToken.getUser();
+
+      // Kullanıcının durumunu "OFFLINE" olarak güncelliyoruz
+      var offlineStatus = userStatusRepository.findById(UserStatusEnum.OFFLINE.getCode())
+          .orElseThrow(() -> new IllegalStateException("User status OFFLINE not found!"));
+
+      user.setUserStatus(offlineStatus);
+      userRepository.save(user); // Kullanıcının yeni durumu kaydediliyor
+    }
   }
 
   @Override
