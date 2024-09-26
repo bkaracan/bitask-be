@@ -94,20 +94,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public ResponsePayload<AuthenticationResponseDTO> authenticate(
-      AuthenticationRequestDTO authenticationRequestDTO) {
+          AuthenticationRequestDTO authenticationRequestDTO) {
+
+    // Kullanıcıyı authenticate ediyoruz
     var auth =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                authenticationRequestDTO.getEmail(), authenticationRequestDTO.getPassword()));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequestDTO.getEmail(), authenticationRequestDTO.getPassword()));
+
     var claims = new HashMap<String, Object>();
     var user = ((User) auth.getPrincipal());
     claims.put("fullName", user.fullName());
     claims.put("jobTitle", user.getJobTitle().getName());
-    user.setUserStatus(userStatusRepository.findById(1L).orElseThrow(IllegalAccessError::new));
+    user.setUserStatus(userStatusRepository.findById(1L).orElseThrow(IllegalAccessError::new)); // "ONLINE" status atandı
     claims.put("userStatus", user.getUserStatus().getName());
+
     userRepository.save(user);
+
+    // JWT token'ı oluşturuyoruz
     var jwttoken = jwtService.generateToken(claims, user);
-    // Token entity'si oluşturuyoruz ve kaydediyoruz
+
+    // Login esnasında kullanıcının daha önce aldığı aktivasyon token'ını silme
+    var activationToken = tokenRepository.findByUserAndExpiredFalseAndRevokedFalse(user)
+            .orElse(null);
+
+    // Eğer aktivasyon token'ı varsa, kullanıcı login olduktan sonra token'ı siliyoruz
+    if (activationToken != null) {
+      tokenRepository.delete(activationToken);
+    }
+
+    // Yeni token oluşturuyoruz ve kaydediyoruz
     var token = new Token();
     token.setTokenValue(jwttoken);
     token.setCreatedAt(LocalDateTime.now());
@@ -115,46 +131,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     token.setUser(user);
     token.setExpired(false);
     token.setRevoked(false);
-    if (token.getValidatedAt() == null) {
-      token.setValidatedAt(LocalDateTime.now());
-    }
 
     // Token'ı veritabanına kaydediyoruz
     tokenRepository.save(token);
+
     return new ResponsePayload<>(
-        ResponseEnum.OK,
-        MessageEnum.AUTHENTICATED.getMessage(),
-        AuthenticationResponseDTO.builder().token(jwttoken).build());
+            ResponseEnum.OK,
+            MessageEnum.AUTHENTICATED.getMessage(),
+            AuthenticationResponseDTO.builder().token(jwttoken).build());
   }
 
+
   @Override
-  public void logout(
-      HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+  public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       return;
     }
+    // JWT token'ı alıyoruz
     jwt = authHeader.substring(7);
+
+    // Token'ı veritabanında arıyoruz
     var storedToken = tokenRepository.findByTokenValue(jwt)
-        .orElse(null);
-    if(storedToken != null) {
-      storedToken.setExpired(true);
-      storedToken.setRevoked(true);
-      tokenRepository.save(storedToken);
+            .orElse(null);
+
+    if (storedToken != null) {
+      // Token'ı veritabanından siliyoruz
+      tokenRepository.delete(storedToken);
 
       // Kullanıcıyı alıyoruz
       var user = storedToken.getUser();
 
       // Kullanıcının durumunu "OFFLINE" olarak güncelliyoruz
       var offlineStatus = userStatusRepository.findById(UserStatusEnum.OFFLINE.getCode())
-          .orElseThrow(() -> new IllegalStateException("User status OFFLINE not found!"));
+              .orElseThrow(() -> new IllegalStateException("User status OFFLINE not found!"));
 
       user.setUserStatus(offlineStatus);
       userRepository.save(user); // Kullanıcının yeni durumu kaydediliyor
     }
   }
+
 
   @Override
   @Transactional

@@ -38,9 +38,9 @@ public class Token {
 
     private LocalDateTime validatedAt;
 
-    private boolean isRevoked;
+    private boolean revoked;
 
-    private boolean isExpired;
+    private boolean expired;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
