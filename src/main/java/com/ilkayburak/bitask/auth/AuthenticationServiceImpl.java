@@ -85,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreyi encode ediyoruz
     user.setRoles(List.of(userRole));
     userRepository.save(user);
-    sendValidationEmail(user);
+    sendValidationEmail(user, 1);
     return new ResponsePayload<>(
         ResponseEnum.OK,
         MessageEnum.REGISTRATION_SUCCESS.getMessage(),
@@ -127,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var token = new Token();
     token.setTokenValue(jwttoken);
     token.setCreatedAt(LocalDateTime.now());
-    token.setExpiredAt(LocalDateTime.now().plusMinutes(30));  // Token geçerlilik süresi
+    token.setExpiredAt(LocalDateTime.now().plusMinutes(15));  // Token geçerlilik süresi
     token.setUser(user);
     token.setExpired(false);
     token.setRevoked(false);
@@ -182,7 +182,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .findByTokenValue(token)
             .orElseThrow(() -> new InvalidTokenException("Invalid token"));
     if (LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
-      sendValidationEmail(savedToken.getUser());
+      sendValidationEmail(savedToken.getUser(), 1);
       throw new TokenExpiredException(
           "Activation token has expired. A new token has been sent to the same email address");
     }
@@ -205,7 +205,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
           .orElseThrow(() -> new IllegalStateException("User not found!"));
 
       if (token == null) {
-        String generatedResetCode = generateAndSaveActivationToken(user);
+        String generatedResetCode = generateAndSaveActivationToken(user, 1);
 
         emailService.sendEmail(
             user.getEmail(),
@@ -222,7 +222,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
           // Optionally send a new code
-          String newResetCode = generateAndSaveActivationToken(user);
+          String newResetCode = generateAndSaveActivationToken(user, 1);
           emailService.sendEmail(
               user.getEmail(),
               user.getFirstName(),
@@ -302,8 +302,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
 
-  private void sendValidationEmail(User user) throws MessagingException {
-    var newToken = generateAndSaveActivationToken(user);
+  private void sendValidationEmail(User user, int time) throws MessagingException {
+    var newToken = generateAndSaveActivationToken(user, time);
     String confirmationUrl = "http://localhost:8088/api/v1/auth/confirm?token=" + newToken;
     emailService.sendEmail(
         user.getEmail(),
@@ -314,7 +314,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         "Activate your account");
   }
 
-  private String generateAndSaveActivationToken(User user) {
+  private String generateAndSaveActivationToken(User user, int time) {
     // Aynı kullanıcıya ait eski token varsa silin
     List<Token> existingTokens = tokenRepository.findByUser(user);
     if (!existingTokens.isEmpty()) {
@@ -322,11 +322,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     // Yeni token oluştur ve kaydet
-    String generatedToken = generateActivationCode(6);
+    String generatedToken = generateActivationCode();
     var token = Token.builder()
         .tokenValue(generatedToken)
         .createdAt(LocalDateTime.now())
-        .expiredAt(LocalDateTime.now().plusMinutes(1)) // 1 dakika geçerli
+        .expiredAt(LocalDateTime.now().plusMinutes(time)) // Geçerli dakika geçerli
         .user(user)
         .build();
 
@@ -335,11 +335,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
 
-  private String generateActivationCode(int length) {
+  private String generateActivationCode() {
     String characters = "0123456789";
     StringBuilder codeBuilder = new StringBuilder();
     SecureRandom secureRandom = new SecureRandom();
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < 6; i++) {
       int randomIndex = secureRandom.nextInt(characters.length());
       codeBuilder.append(characters.charAt(randomIndex));
     }
