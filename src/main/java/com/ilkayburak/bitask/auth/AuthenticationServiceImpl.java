@@ -175,7 +175,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
   @Override
-  @Transactional
+  @Transactional(noRollbackFor = TokenExpiredException.class)
   public ResponsePayload<String> activateAccount(String token) throws MessagingException {
     Token savedToken =
         tokenRepository
@@ -326,7 +326,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var token = Token.builder()
         .tokenValue(generatedToken)
         .createdAt(LocalDateTime.now())
-        .expiredAt(LocalDateTime.now().plusMinutes(15)) // 15 dakika geçerli
+        .expiredAt(LocalDateTime.now().plusMinutes(1)) // 1 dakika geçerli
         .user(user)
         .build();
 
