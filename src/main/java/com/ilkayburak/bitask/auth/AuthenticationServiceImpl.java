@@ -55,6 +55,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final UserDTOMapper userDTOMapper;
   private final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
+  private static final String USER_NOT_FOUND = "User not found!";
+
 
   public ResponsePayload<RegistrationResponseDTO> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
@@ -192,7 +194,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var user =
         userRepository
             .findById(savedToken.getUser().getId())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
     user.setEnabled(true);
     userRepository.save(user);
     savedToken.setValidatedAt(LocalDateTime.now());
@@ -205,7 +207,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   public ResponsePayload<String> resendActivationCode(Map<String, String> request) throws MessagingException {
     String email = request.get("email");
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
     sendValidationEmail(user, 1);
     return new ResponsePayload<>(ResponseEnum.OK, "New activation token has been sent.");
   }
@@ -215,7 +217,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   public ResponsePayload<String> sendResetPasswordCode(String email, String token) {
     try {
       var user = userRepository.findByEmail(email)
-          .orElseThrow(() -> new IllegalStateException("User not found!"));
+          .orElseThrow(() -> new IllegalStateException(USER_NOT_FOUND));
 
       if (token == null) {
         String generatedResetCode = generateAndSaveActivationToken(user, 1);
