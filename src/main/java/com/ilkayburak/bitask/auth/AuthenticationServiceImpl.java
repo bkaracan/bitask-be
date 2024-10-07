@@ -198,6 +198,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
+  public ResponsePayload<String> resendActivationCode(String token) throws MessagingException {
+    Token savedToken = tokenRepository.findByTokenValue(token)
+            .orElseThrow(() -> new InvalidTokenException("Invalid token"));
+    sendValidationEmail(savedToken.getUser(), 1);
+    return new ResponsePayload<>(ResponseEnum.OK);
+  }
+
+  @Override
   @Transactional
   public ResponsePayload<String> sendResetPasswordCode(String email, String token) {
     try {
