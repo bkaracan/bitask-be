@@ -23,7 +23,8 @@ public enum MessageEnum {
     ACCOUNT_DISABLED(15, "User account is disabled!"),
     BAD_CREDENTIALS(16, "Email and/or password is incorrect!"),
     RETRIEVE_SUCCESS(17, "Data retrieved successfully!"),
-    EMAIL_ALREADY_EXISTS(18, "Email already exists!");
+    EMAIL_ALREADY_EXISTS(18, "Email already exists!"),
+    NEW_ACTIVATION_TOKEN_HAS_BEEN_SENT(19, "The new activation token has been sent!");
 
 
 

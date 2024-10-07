@@ -54,6 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final UserDTOMapper userDTOMapper;
   private final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
+
   public ResponsePayload<RegistrationResponseDTO> register(RegistrationRequestDTO registrationRequestDTO)
       throws MessagingException {
 
@@ -85,11 +86,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreyi encode ediyoruz
     user.setRoles(List.of(userRole));
     userRepository.save(user);
-    sendValidationEmail(user, 1);
+    String token = sendValidationEmail(user, 1);
     return new ResponsePayload<>(
         ResponseEnum.OK,
         MessageEnum.REGISTRATION_SUCCESS.getMessage(),
-        RegistrationResponseDTO.builder().build());
+        RegistrationResponseDTO.builder()
+            .token(token)
+            .build());
   }
 
   @Override
@@ -198,11 +201,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
+  @Transactional(noRollbackFor = TokenExpiredException.class)
   public ResponsePayload<String> resendActivationCode(String token) throws MessagingException {
     Token savedToken = tokenRepository.findByTokenValue(token)
-            .orElseThrow(() -> new InvalidTokenException("Invalid token"));
+        .orElseThrow(() -> new InvalidTokenException("Invalid token"));
     sendValidationEmail(savedToken.getUser(), 1);
-    return new ResponsePayload<>(ResponseEnum.OK);
+    return new ResponsePayload<>(ResponseEnum.OK, "New activation token has been sent.");
   }
 
   @Override
@@ -310,7 +314,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
 
-  private void sendValidationEmail(User user, int time) throws MessagingException {
+  private String sendValidationEmail(User user, int time) throws MessagingException {
     var newToken = generateAndSaveActivationToken(user, time);
     String confirmationUrl = "http://localhost:8088/api/v1/auth/confirm?token=" + newToken;
     emailService.sendEmail(
@@ -320,6 +324,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         confirmationUrl,
         newToken,
         "Activate your account");
+
+    return newToken;
   }
 
   private String generateAndSaveActivationToken(User user, int time) {
