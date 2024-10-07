@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ResponseEnum.OK,
         MessageEnum.REGISTRATION_SUCCESS.getMessage(),
         RegistrationResponseDTO.builder()
-            .token(token)
+            .email(user.getEmail())
             .build());
   }
 
@@ -201,11 +202,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  @Transactional(noRollbackFor = TokenExpiredException.class)
-  public ResponsePayload<String> resendActivationCode(String token) throws MessagingException {
-    Token savedToken = tokenRepository.findByTokenValue(token)
-        .orElseThrow(() -> new InvalidTokenException("Invalid token"));
-    sendValidationEmail(savedToken.getUser(), 1);
+  @Transactional
+  public ResponsePayload<String> resendActivationCode(Map<String, String> request) throws MessagingException {
+    String email = request.get("email");
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+    sendValidationEmail(user, 1);
     return new ResponsePayload<>(ResponseEnum.OK, "New activation token has been sent.");
   }
 
@@ -325,7 +327,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         newToken,
         "Activate your account");
 
-    return newToken;
+    return user.getEmail();
   }
 
   private String generateAndSaveActivationToken(User user, int time) {

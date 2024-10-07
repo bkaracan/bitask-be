@@ -9,6 +9,7 @@ import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import org.springframework.security.core.Authentication;
 
 public interface AuthenticationService {
@@ -19,7 +20,7 @@ public interface AuthenticationService {
 
     ResponsePayload<String> activateAccount(String token) throws MessagingException;
 
-    ResponsePayload<String> resendActivationCode(String token) throws MessagingException;
+    ResponsePayload<String> resendActivationCode(Map<String, String> request) throws MessagingException;
 
     ResponsePayload<String> sendResetPasswordCode(String email, String resetCode) throws MessagingException;
 

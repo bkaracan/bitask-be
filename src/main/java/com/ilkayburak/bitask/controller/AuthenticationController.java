@@ -14,6 +14,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,8 +56,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/resend-activation-code")
-    public ResponsePayload<String> resendActivationCode(String token) throws MessagingException {
-        return authenticationService.resendActivationCode(token);
+    public ResponsePayload<String> resendActivationCode(@RequestBody Map<String, String> request) throws MessagingException {
+        return authenticationService.resendActivationCode(request);
     }
 
     @PostMapping("/forgot-password")
