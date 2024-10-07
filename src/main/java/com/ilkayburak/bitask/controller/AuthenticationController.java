@@ -54,8 +54,8 @@ public class AuthenticationController {
       return authenticationService.activateAccount(token);
     }
 
-    @GetMapping("/resend-activation-code")
-    public ResponsePayload<String> resendActivationCode(@RequestParam String token) throws MessagingException {
+    @PostMapping("/resend-activation-code")
+    public ResponsePayload<String> resendActivationCode(String token) throws MessagingException {
         return authenticationService.resendActivationCode(token);
     }
 
