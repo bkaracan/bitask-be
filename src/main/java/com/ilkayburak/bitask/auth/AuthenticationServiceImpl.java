@@ -89,6 +89,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreyi encode ediyoruz
     user.setRoles(List.of(userRole));
     userRepository.save(user);
+    sendValidationEmail(user, 1);
     return new ResponsePayload<>(
         ResponseEnum.OK,
         MessageEnum.REGISTRATION_SUCCESS.getMessage(),
