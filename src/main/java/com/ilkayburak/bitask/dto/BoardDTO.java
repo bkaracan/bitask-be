@@ -17,12 +17,10 @@ public class BoardDTO {
 
   private Long id;
   private String name;
-  private String uniqueId;
   private LocalDateTime createDate;
   private UserDTO creator;
   private List<UserDTO> members;
   private List<TaskDTO> tasks;
-  private List<SprintDTO> sprints;
 
   public static List<Long> getMembersByIdList(List<User> users) {
     List<Long> members = new ArrayList<>();
