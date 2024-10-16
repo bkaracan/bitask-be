@@ -15,12 +15,10 @@ public class BoardDTOMapper {
         return BoardDTO.builder()
                 .id(board.getId())
                 .name(board.getName())
-                .uniqueId(board.getUniqueId())
                 .createDate(board.getCreateDate())
                 .creator(new UserDTOMapper().convertToDto(board.getCreator()))
                 .members(new UserDTOMapper().mapList(board.getMembers()))
                 .tasks(new TaskDTOMapper().mapList(board.getTasks()))
-                .sprints(new SprintDTOMapper().mapList(board.getSprints()))
                 .build();
     }
 
@@ -31,12 +29,10 @@ public class BoardDTOMapper {
         return Board.builder()
                 .id(boardDTO.getId())
                 .name(boardDTO.getName())
-                .uniqueId(boardDTO.getUniqueId())
                 .createDate(boardDTO.getCreateDate())
                 .creator(new UserDTOMapper().convertToEntity(boardDTO.getCreator()))
                 .members(new UserDTOMapper().convertListToEntity(boardDTO.getMembers()))
                 .tasks(new TaskDTOMapper().convertListToEntity(boardDTO.getTasks()))
-                .sprints(new SprintDTOMapper().convertListToEntity(boardDTO.getSprints()))
                 .build();
     }
 
@@ -55,7 +51,6 @@ public class BoardDTOMapper {
         return BoardDTO.builder()
                 .id(board.getId())
                 .name(board.getName())
-                .uniqueId(board.getUniqueId())
                 .createDate(board.getCreateDate())
                 .build();
     }

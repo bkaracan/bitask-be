@@ -28,7 +28,6 @@ public class TaskDTOMapper {
                 .board(new BoardDTOMapper().convertToDTO(task.getBoard()))
                 .assignees(new UserDTOMapper().mapList(task.getAssignees()))
                 .blockingTask(task.getBlockingTask())
-                .sprint(new SprintDTOMapper().convertToDto(task.getSprint()))
                 .build();
     }
 
@@ -48,7 +47,6 @@ public class TaskDTOMapper {
                 .board(new BoardDTOMapper().convertToEntity(taskDTO.getBoard()))
                 .assignees(new UserDTOMapper().convertListToEntity(taskDTO.getAssignees()))
                 .blockingTask(taskDTO.getBlockingTask())
-                .sprint(new SprintDTOMapper().convertToEntity(taskDTO.getSprint()))
                 .build();
     }
 
