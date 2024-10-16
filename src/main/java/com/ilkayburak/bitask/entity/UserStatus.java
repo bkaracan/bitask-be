@@ -24,7 +24,7 @@ public class UserStatus implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "userStatus")
+    @OneToMany(mappedBy = "userStatus", fetch = FetchType.LAZY)
     private List<User> users;
 
 }

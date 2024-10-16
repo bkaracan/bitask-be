@@ -9,14 +9,12 @@ import java.util.List;
 @Component
 public class CommentsUsersDTOMapper {
 
-    public CommentsUsersDTO convertToDto(CommentsUsers commentsUsers) {
+    public CommentsUsersDTO convertToDTO(CommentsUsers commentsUsers) {
         if (commentsUsers == null) {
             return null;
         }
         return CommentsUsersDTO.builder()
                 .id(commentsUsers.getId())
-                .comment(new CommentsDTOMapper().convertToDto(commentsUsers.getComment()))
-                .user(new UserDTOMapper().convertToDto(commentsUsers.getTaggedUser()))
                 .build();
     }
 
@@ -26,17 +24,30 @@ public class CommentsUsersDTOMapper {
         }
         return CommentsUsers.builder()
                 .id(commentsUsersDTO.getId())
-                .comment(new CommentsDTOMapper().convertToEntity(commentsUsersDTO.getComment()))
-                .taggedUser(new UserDTOMapper().convertToEntity(commentsUsersDTO.getUser()))
                 .build();
     }
 
     public List<CommentsUsersDTO> mapList(List<CommentsUsers> list) {
-        return list.stream().map(this::convertToDto).toList();
+        return list.stream().map(this::convertToDTO).toList();
     }
 
-    public List<CommentsUsers> mapListToEntity(List<CommentsUsersDTO> list) {
+    public List<CommentsUsers> convertListToEntity(List<CommentsUsersDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
+    }
+
+    public CommentsUsersDTO mapWithObjects(CommentsUsers commentsUsers) {
+        if (commentsUsers == null) {
+            return null;
+        }
+        return CommentsUsersDTO.builder()
+                .id(commentsUsers.getId())
+                .comment(new CommentsDTOMapper().convertToDto(commentsUsers.getComment()))
+                .user(new UserDTOMapper().mapWithoutObjects(commentsUsers.getTaggedUser()))
+                .build();
+    }
+
+    public List<CommentsUsersDTO> mapListWithObjects(List<CommentsUsers> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
 
 }

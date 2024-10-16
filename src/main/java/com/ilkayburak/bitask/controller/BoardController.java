@@ -23,6 +23,12 @@ public class BoardController {
         return boardService.save(boardDTO);
     }
 
+    @PostMapping("/update")
+    @Operation(summary = "Updates an existing board")
+    public ResponsePayload<BoardDTO> update(@RequestBody BoardDTO boardDTO) {
+        return boardService.update(boardDTO);
+    }
+
     @GetMapping("/getBoardById")
     @Operation(summary = "Get board by ID")
     public ResponsePayload<BoardDTO> getBoardById(@RequestParam Long id) {

@@ -16,9 +16,6 @@ public class BoardDTOMapper {
                 .id(board.getId())
                 .name(board.getName())
                 .createDate(board.getCreateDate())
-                .creator(new UserDTOMapper().convertToDto(board.getCreator()))
-                .members(new UserDTOMapper().mapList(board.getMembers()))
-                .tasks(new TaskDTOMapper().mapList(board.getTasks()))
                 .build();
     }
 
@@ -30,21 +27,18 @@ public class BoardDTOMapper {
                 .id(boardDTO.getId())
                 .name(boardDTO.getName())
                 .createDate(boardDTO.getCreateDate())
-                .creator(new UserDTOMapper().convertToEntity(boardDTO.getCreator()))
-                .members(new UserDTOMapper().convertListToEntity(boardDTO.getMembers()))
-                .tasks(new TaskDTOMapper().convertListToEntity(boardDTO.getTasks()))
                 .build();
     }
 
-    public List<BoardDTO> mapList(List<Board> boards) {
-        return boards.stream().map(this::convertToDTO).toList();
+    public List<BoardDTO> mapList(List<Board> list) {
+        return list.stream().map(this::convertToDTO).toList();
     }
 
     public List<Board> convertListToEntity(List<BoardDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
     }
 
-    public BoardDTO mapWithoutObjects(Board board) {
+    public BoardDTO mapWithObjects(Board board) {
         if (board == null) {
             return null;
         }
@@ -52,10 +46,13 @@ public class BoardDTOMapper {
                 .id(board.getId())
                 .name(board.getName())
                 .createDate(board.getCreateDate())
+                .creator(new UserDTOMapper().convertToDto(board.getCreator()))
+                .members(new UserDTOMapper().mapListWithoutObjects(board.getMembers()))
+                .tasks(new TaskDTOMapper().mapList(board.getTasks()))
                 .build();
     }
 
-    public List<BoardDTO> mapListWithoutObjects(List<Board> boards) {
-        return boards.stream().map(this::mapWithoutObjects).toList();
+    public List<BoardDTO> mapListWithObjects(List<Board> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
 }

@@ -45,7 +45,7 @@ public class User implements UserDetails, Principal {
     @JoinColumn(name = "job_title_id")
     private JobTitle jobTitle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_status_id")
     private UserStatus userStatus;
 

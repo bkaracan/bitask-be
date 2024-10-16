@@ -23,15 +23,15 @@ public class TaskDTOMapper {
                 .createdDate(task.getCreatedDate())
                 .expectedFinishDate(task.getExpectedFinishDate())
                 .lastModifiedDate(task.getModifiedDate())
-                .updatedBy(new UserDTOMapper().convertToDto(task.getUpdatedBy()))
                 .deadline(task.getDeadline())
-                .board(new BoardDTOMapper().convertToDTO(task.getBoard()))
-                .assignees(new UserDTOMapper().mapList(task.getAssignees()))
                 .blockingTask(task.getBlockingTask())
                 .build();
     }
 
     public Task convertToEntity(TaskDTO taskDTO) {
+        if (taskDTO == null) {
+            return null;
+        }
         return Task.builder()
                 .id(taskDTO.getId())
                 .keyId(taskDTO.getKeyId())
@@ -41,11 +41,8 @@ public class TaskDTOMapper {
                 .status(taskDTO.getStatus())
                 .createdDate(taskDTO.getCreatedDate())
                 .expectedFinishDate(taskDTO.getExpectedFinishDate())
-                .deadline(taskDTO.getDeadline())
                 .modifiedDate(taskDTO.getLastModifiedDate())
-                .updatedBy(new UserDTOMapper().convertToEntity(taskDTO.getUpdatedBy()))
-                .board(new BoardDTOMapper().convertToEntity(taskDTO.getBoard()))
-                .assignees(new UserDTOMapper().convertListToEntity(taskDTO.getAssignees()))
+                .deadline(taskDTO.getDeadline())
                 .blockingTask(taskDTO.getBlockingTask())
                 .build();
     }
@@ -58,7 +55,7 @@ public class TaskDTOMapper {
         return list.stream().map(this::convertToEntity).toList();
     }
 
-    public TaskDTO mapWithoutObjects(Task task) {
+    public TaskDTO mapWithObjects(Task task) {
         if (task == null) {
             return null;
         }
@@ -71,13 +68,17 @@ public class TaskDTOMapper {
                 .status(task.getStatus())
                 .createdDate(task.getCreatedDate())
                 .expectedFinishDate(task.getExpectedFinishDate())
-                .deadline(task.getDeadline())
                 .lastModifiedDate(task.getModifiedDate())
+                .updatedBy(new UserDTOMapper().mapWithoutObjects(task.getUpdatedBy()))
+                .deadline(task.getDeadline())
+                .board(new BoardDTOMapper().convertToDTO(task.getBoard()))
+                .assignees(new UserDTOMapper().mapListWithoutObjects(task.getAssignees()))
                 .blockingTask(task.getBlockingTask())
                 .build();
     }
 
-    public List<TaskDTO> mapListWithoutObjects(List<Task> list) {
-        return list.stream().map(this::mapWithoutObjects).toList();
+    public List<TaskDTO> mapListWithObjects(List<Task> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
+
 }

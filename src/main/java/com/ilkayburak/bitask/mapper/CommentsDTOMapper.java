@@ -17,7 +17,6 @@ public class CommentsDTOMapper {
                 .id(comments.getId())
                 .taskId(comments.getTaskId())
                 .boardId(comments.getBoardId())
-                .user(new UserDTOMapper().convertToDto(comments.getUser()))
                 .comment(comments.getComment())
                 .createdAt(comments.getCreatedAt())
                 .updatedAt(comments.getUpdatedAt())
@@ -32,7 +31,6 @@ public class CommentsDTOMapper {
                 .id(commentsDTO.getId())
                 .taskId(commentsDTO.getTaskId())
                 .boardId(commentsDTO.getBoardId())
-                .user(new UserDTOMapper().convertToEntity(commentsDTO.getUser()))
                 .comment(commentsDTO.getComment())
                 .createdAt(commentsDTO.getCreatedAt())
                 .updatedAt(commentsDTO.getUpdatedAt())
@@ -43,11 +41,11 @@ public class CommentsDTOMapper {
         return list.stream().map(this::convertToDto).toList();
     }
 
-    public List<Comments> mapListToEntity(List<CommentsDTO> list) {
+    public List<Comments> convertListToEntity(List<CommentsDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
     }
 
-    public CommentsDTO mapWithoutObject(Comments comments) {
+    public CommentsDTO mapWithObjects(Comments comments) {
         if (comments == null) {
             return null;
         }
@@ -55,14 +53,15 @@ public class CommentsDTOMapper {
                 .id(comments.getId())
                 .taskId(comments.getTaskId())
                 .boardId(comments.getBoardId())
+                .user(new UserDTOMapper().mapWithoutObjects(comments.getUser()))
                 .comment(comments.getComment())
                 .createdAt(comments.getCreatedAt())
                 .updatedAt(comments.getUpdatedAt())
                 .build();
     }
 
-    public List<CommentsDTO> mapListWithoutObject(List<Comments> list) {
-        return list.stream().map(this::mapWithoutObject).toList();
+    public List<CommentsDTO> mapListWithObjects(List<Comments> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
 
 }

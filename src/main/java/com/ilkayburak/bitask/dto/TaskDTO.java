@@ -27,6 +27,5 @@ public class TaskDTO {
     private BoardDTO board;
     private List<UserDTO> assignees;
     private Long blockingTask;
-    private SprintDTO sprint;
 
 }

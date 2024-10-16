@@ -24,17 +24,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponsePayload<TaskDTO> save(TaskDTO taskDTO) {
+        return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(),
+                mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
+    }
+
+    @Override
+    public ResponsePayload<TaskDTO> update(TaskDTO taskDTO) {
         Optional<Task> task = repository.findById(taskDTO.getId());
-        if (task.isEmpty()) {
-            return new ResponsePayload<>(
-                    ResponseEnum.OK,
-                    "Task created successfully.",
+        if (task.isPresent()) {
+            return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.UPDATE_SUCCESS.getMessage(),
                     mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
         }
-        return new ResponsePayload<>(
-                ResponseEnum.OK,
-                "Task updated successfully.",
-                mapper.convertToDto(repository.save(mapper.convertToEntity(taskDTO))));
+        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
     }
 
     @Override

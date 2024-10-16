@@ -17,7 +17,6 @@ public class NotificationDTOMapper {
                 .id(notification.getId())
                 .message(notification.getMessage())
                 .type(notification.getType())
-                .userDTO(new UserDTOMapper().convertToDto(notification.getUser()))
                 .isRead(notification.getIsRead())
                 .createdAt(notification.getCreatedAt())
                 .readAt(notification.getReadAt())
@@ -32,7 +31,6 @@ public class NotificationDTOMapper {
                 .id(notificationDTO.getId())
                 .message(notificationDTO.getMessage())
                 .type(notificationDTO.getType())
-                .user(new UserDTOMapper().convertToEntity(notificationDTO.getUserDTO()))
                 .isRead(notificationDTO.getIsRead())
                 .createdAt(notificationDTO.getCreatedAt())
                 .readAt(notificationDTO.getReadAt())
@@ -43,11 +41,11 @@ public class NotificationDTOMapper {
         return list.stream().map(this::convertToDTO).toList();
     }
 
-    public List<Notification> mapListToEntity(List<NotificationDTO> list) {
+    public List<Notification> convertListToEntity(List<NotificationDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
     }
 
-    public NotificationDTO mapWithoutObject(Notification notification) {
+    public NotificationDTO mapWithObjects(Notification notification) {
         if (notification == null) {
             return null;
         }
@@ -55,13 +53,15 @@ public class NotificationDTOMapper {
                 .id(notification.getId())
                 .message(notification.getMessage())
                 .type(notification.getType())
+                .userDTO(new UserDTOMapper().mapWithoutObjects(notification.getUser()))
                 .isRead(notification.getIsRead())
                 .createdAt(notification.getCreatedAt())
                 .readAt(notification.getReadAt())
                 .build();
     }
 
-    public List<NotificationDTO> mapListWithoutObject(List<Notification> list) {
-        return list.stream().map(this::convertToDTO).toList();
+    public List<NotificationDTO> mapListWithObjects(List<Notification> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
+
 }
