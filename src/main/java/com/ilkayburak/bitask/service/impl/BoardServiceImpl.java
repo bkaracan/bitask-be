@@ -24,13 +24,18 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponsePayload<BoardDTO> save(BoardDTO boardDTO) {
+        return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(),
+                mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
+    }
+
+    @Override
+    public ResponsePayload<BoardDTO> update(BoardDTO boardDTO) {
         Optional<Board> board = boardRepository.findById(boardDTO.getId());
-        if (board.isEmpty()) {
-            return new ResponsePayload<>(ResponseEnum.OK, "Board created successfully.",
+        if (board.isPresent()) {
+            return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.UPDATE_SUCCESS.getMessage(),
                     mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
         }
-        return new ResponsePayload<>(ResponseEnum.OK, "Board updated successfully",
-                mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
+        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
     }
 
     @Override

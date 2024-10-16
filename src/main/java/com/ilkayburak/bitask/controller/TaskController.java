@@ -18,10 +18,16 @@ public class TaskController {
     private final TaskService taskService;
 
     // Creating a task
-    @PostMapping("/saveTask")
+    @PostMapping("/save")
     @Operation(summary = "Create a task")
     public ResponsePayload<TaskDTO> saveTask(@RequestBody TaskDTO taskDTO) {
         return taskService.save(taskDTO);
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "Updates an existing board")
+    public ResponsePayload<TaskDTO> update(@RequestBody TaskDTO taskDTO) {
+        return taskService.update(taskDTO);
     }
 
     // Get a task by its unique ID

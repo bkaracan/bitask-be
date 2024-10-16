@@ -8,6 +8,7 @@ import java.util.List;
 public interface BoardService {
 
     ResponsePayload<BoardDTO> save(BoardDTO boardDTO);
+    ResponsePayload<BoardDTO> update(BoardDTO boardDTO);
     ResponsePayload<BoardDTO> getById(Long id);
     ResponsePayload<List<BoardDTO>> getAllBoardsForUser(Long id);
     ResponsePayload<List<BoardDTO>> getAllBoardsByCreator(Long id);

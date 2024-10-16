@@ -16,7 +16,6 @@ public class UserStatusDTOMapper {
         return UserStatusDTO.builder()
                 .id(userStatus.getId())
                 .name(userStatus.getName())
-                .users(new UserDTOMapper().mapList(userStatus.getUsers()))
                 .build();
     }
 
@@ -27,7 +26,6 @@ public class UserStatusDTOMapper {
         return UserStatus.builder()
                 .id(userStatusDTO.getId())
                 .name(userStatusDTO.getName())
-                .users(new UserDTOMapper().convertListToEntity(userStatusDTO.getUsers()))
                 .build();
     }
 
@@ -35,21 +33,22 @@ public class UserStatusDTOMapper {
         return list.stream().map(this::convertToDto).toList();
     }
 
-    public List<UserStatus> mapListToEntity(List<UserStatusDTO> list) {
+    public List<UserStatus> convertListToEntity(List<UserStatusDTO> list) {
         return list.stream().map(this::convertToEntity).toList();
     }
 
-    public UserStatusDTO mapWithoutObject(UserStatus userStatus) {
+    public UserStatusDTO mapWithObjects(UserStatus userStatus) {
         if (userStatus == null) {
             return null;
         }
         return UserStatusDTO.builder()
                 .id(userStatus.getId())
                 .name(userStatus.getName())
+                .users(new UserDTOMapper().mapListWithoutObjects(userStatus.getUsers()))
                 .build();
     }
 
-    public List<UserStatusDTO> mapListWithoutObject(List<UserStatus> list) {
-        return list.stream().map(this::mapWithoutObject).toList();
+    public List<UserStatusDTO> mapListWithObjects(List<UserStatus> list) {
+        return list.stream().map(this::mapWithObjects).toList();
     }
 }

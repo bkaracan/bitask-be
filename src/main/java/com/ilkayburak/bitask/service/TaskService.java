@@ -8,6 +8,7 @@ import java.util.List;
 public interface TaskService {
 
     ResponsePayload<TaskDTO> save(TaskDTO taskDTO);
+    ResponsePayload<TaskDTO> update(TaskDTO taskDTO);
     ResponsePayload<TaskDTO> getById(Long id);
     ResponsePayload<TaskDTO> getByKeyIdAndBoardId(String keyId, Long boardId);
     ResponsePayload<List<TaskDTO>> getAllTaskByBoardId(Long boardId);
