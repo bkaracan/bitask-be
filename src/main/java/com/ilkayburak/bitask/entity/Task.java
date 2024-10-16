@@ -58,8 +58,4 @@ public class Task {
 
     private Long blockingTask;
 
-    @ManyToOne
-    @JoinColumn(name = "sprint_id")
-    private Sprint sprint;
-
 }
