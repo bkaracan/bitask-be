@@ -25,6 +25,7 @@ public class Board {
     private Long id;
 
     private String name;
+    private String uniqueId;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -41,5 +42,8 @@ public class Board {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sprint> sprints;
 
 }
