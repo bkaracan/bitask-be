@@ -1,15 +1,21 @@
 package com.ilkayburak.bitask.service.impl;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
+import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.entity.Board;
+import com.ilkayburak.bitask.entity.User;
 import com.ilkayburak.bitask.enumarations.core.MessageEnum;
 import com.ilkayburak.bitask.enumarations.core.ResponseEnum;
 import com.ilkayburak.bitask.mapper.BoardDTOMapper;
 import com.ilkayburak.bitask.repository.BoardRepository;
+import com.ilkayburak.bitask.repository.UserRepository;
 import com.ilkayburak.bitask.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +26,16 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     private final BoardDTOMapper mapper;
 
     @Override
-    public ResponsePayload<BoardDTO> save(BoardDTO boardDTO) {
-        return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(),
-                mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
+    public ResponsePayload<BoardDTO> save(CreateBoardRequestDTO createBoardRequestDTO) {
+       String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+       User creator = userRepository.findByEmail(username)
+               .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+       Board board = mapper.convertToEntityForScreenDTO(createBoardRequestDTO, creator);
+       return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(), mapper.convertToDTO(boardRepository.save(board)));
     }
 
     @Override

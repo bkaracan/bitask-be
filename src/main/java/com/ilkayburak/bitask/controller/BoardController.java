@@ -1,6 +1,7 @@
 package com.ilkayburak.bitask.controller;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
+import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,8 +20,8 @@ public class BoardController {
 
     @PostMapping("/save")
     @Operation(summary = "Creates a new board")
-    public ResponsePayload<BoardDTO> save(@RequestBody BoardDTO boardDTO) {
-        return boardService.save(boardDTO);
+    public ResponsePayload<BoardDTO> save(@RequestBody CreateBoardRequestDTO createBoardRequestDTO) {
+        return boardService.save(createBoardRequestDTO);
     }
 
     @PostMapping("/update")
