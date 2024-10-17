@@ -1,7 +1,10 @@
 package com.ilkayburak.bitask.mapper;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
+import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
 import com.ilkayburak.bitask.entity.Board;
+import com.ilkayburak.bitask.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +19,7 @@ public class BoardDTOMapper {
                 .id(board.getId())
                 .name(board.getName())
                 .createDate(board.getCreateDate())
+                .creator(new UserDTOMapper().convertToDto(board.getCreator()))
                 .build();
     }
 
@@ -28,6 +32,18 @@ public class BoardDTOMapper {
                 .name(boardDTO.getName())
                 .createDate(boardDTO.getCreateDate())
                 .build();
+    }
+
+    public Board convertToEntityForScreenDTO(CreateBoardRequestDTO createBoardRequestDTO, User creator) {
+        if(createBoardRequestDTO == null || creator == null) {
+            return null;
+        }
+        return Board.builder()
+                .name(createBoardRequestDTO.getName())
+                .createDate(LocalDateTime.now())
+                .creator(creator)
+                .build()
+                ;
     }
 
     public List<BoardDTO> mapList(List<Board> list) {
