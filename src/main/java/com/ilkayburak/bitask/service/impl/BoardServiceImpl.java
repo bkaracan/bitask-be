@@ -31,12 +31,22 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponsePayload<BoardDTO> save(CreateBoardRequestDTO createBoardRequestDTO) {
-       String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-       User creator = userRepository.findByEmail(username)
-               .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-       Board board = mapper.convertToEntityForScreenDTO(createBoardRequestDTO, creator);
-       return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(), mapper.convertToDTO(boardRepository.save(board)));
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User creator = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+        // Aynı isimde bir board olup olmadığını kontrol et
+        Optional<Board> existingBoard = boardRepository.findByNameIgnoreCase(createBoardRequestDTO.getName().toLowerCase());
+        if (existingBoard.isPresent()) {
+            // Eğer aynı isimde bir board varsa hata mesajı döndür
+            return new ResponsePayload<>(ResponseEnum.ERROR, MessageEnum.RECORD_EXISTS.getMessage());
+        }
+
+        // Eğer aynı isimde bir board yoksa board kaydını gerçekleştir
+        Board board = mapper.convertToEntityForScreenDTO(createBoardRequestDTO, creator);
+        return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(), mapper.convertToDTO(boardRepository.save(board)));
     }
+
 
     @Override
     public ResponsePayload<BoardDTO> update(BoardDTO boardDTO) {
