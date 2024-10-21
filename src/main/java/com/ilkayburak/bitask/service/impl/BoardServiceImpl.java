@@ -86,6 +86,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public ResponsePayload<List<BoardDTO>> getAllBoards() {
+        List<Board> boards = boardRepository.findAll();
+        if (!boards.isEmpty()) {
+            return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(boards));
+        }
+        return new ResponsePayload<>(ResponseEnum.BADREQUEST, MessageEnum.EMPTY_LIST.getMessage());
+    }
+
+    @Override
     public ResponsePayload<Void> deleteById(Long id) {
         Optional<Board> board = boardRepository.findById(id);
         if (board.isPresent()) {
