@@ -48,6 +48,12 @@ public class BoardController {
         return boardService.getAllBoardsByCreator(id);
     }
 
+    @GetMapping("/getAllBoards")
+    @Operation(summary = "Get all boards")
+    public ResponsePayload<List<BoardDTO>> getAllBoards() {
+        return boardService.getAllBoards();
+    }
+
     @DeleteMapping("/deleteById")
     @Operation(summary = "Delete a board by ID")
     public ResponsePayload<Void> deleteById(@RequestParam Long id) {
