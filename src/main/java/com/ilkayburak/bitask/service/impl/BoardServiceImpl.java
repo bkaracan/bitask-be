@@ -13,6 +13,8 @@ import com.ilkayburak.bitask.repository.UserRepository;
 import com.ilkayburak.bitask.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -87,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponsePayload<List<BoardDTO>> getAllBoards() {
-        List<Board> boards = boardRepository.findAll();
+    List<Board> boards = boardRepository.findAll(Sort.by(Direction.DESC, "createDate"));
         if (!boards.isEmpty()) {
             return new ResponsePayload<>(ResponseEnum.OK, mapper.mapList(boards));
         }
