@@ -2,6 +2,7 @@ package com.ilkayburak.bitask.service.impl;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
 import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
+import com.ilkayburak.bitask.dto.UpdateBoardRequestDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.entity.Board;
 import com.ilkayburak.bitask.entity.User;
@@ -51,14 +52,44 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public ResponsePayload<BoardDTO> update(BoardDTO boardDTO) {
-        Optional<Board> board = boardRepository.findById(boardDTO.getId());
-        if (board.isPresent()) {
+    public ResponsePayload<BoardDTO> update(UpdateBoardRequestDTO updateBoardRequestDTO) {
+        Optional<Board> boardOptional = boardRepository.findById(updateBoardRequestDTO.getId());
+        if (boardOptional.isPresent()) {
+            Board board = boardOptional.get();
+
+            // Güncel kullanıcıyı SecurityContextHolder'dan al
+            String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+            Optional<User> currentUserOptional = userRepository.findByEmail(username);
+            if (currentUserOptional.isEmpty()) {
+                return new ResponsePayload<>(ResponseEnum.UNAUTHORIZED, MessageEnum.NOT_AUTH.getMessage());
+            }
+
+            // Board adını güncelle
+            if (updateBoardRequestDTO.getName() != null) {
+                board.setName(updateBoardRequestDTO.getName());
+            }
+
+            // Üyeleri ekle
+            if (updateBoardRequestDTO.getMembersToAdd() != null) {
+                List<User> membersToAdd = userRepository.findAllById(updateBoardRequestDTO.getMembersToAdd());
+                board.getMembers().addAll(membersToAdd);
+            }
+
+            // Üyeleri çıkar
+            if (updateBoardRequestDTO.getMembersToRemove() != null) {
+                List<User> membersToRemove = userRepository.findAllById(updateBoardRequestDTO.getMembersToRemove());
+                board.getMembers().removeAll(membersToRemove);
+            }
+
+            // Güncellenen board'u kaydet
+            board = boardRepository.save(board);
             return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.UPDATE_SUCCESS.getMessage(),
-                    mapper.convertToDTO(boardRepository.save(mapper.convertToEntity(boardDTO))));
+                mapper.mapForUpdateBoardRequest(board, updateBoardRequestDTO));
         }
         return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
     }
+
+
 
     @Override
     public ResponsePayload<BoardDTO> getById(Long id) {

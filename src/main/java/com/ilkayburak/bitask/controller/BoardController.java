@@ -2,6 +2,7 @@ package com.ilkayburak.bitask.controller;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
 import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
+import com.ilkayburak.bitask.dto.UpdateBoardRequestDTO;
 import com.ilkayburak.bitask.dto.core.ResponsePayload;
 import com.ilkayburak.bitask.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,10 +25,10 @@ public class BoardController {
         return boardService.save(createBoardRequestDTO);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     @Operation(summary = "Updates an existing board")
-    public ResponsePayload<BoardDTO> update(@RequestBody BoardDTO boardDTO) {
-        return boardService.update(boardDTO);
+    public ResponsePayload<BoardDTO> update(@RequestBody UpdateBoardRequestDTO updateBoardRequestDTO) {
+        return boardService.update(updateBoardRequestDTO);
     }
 
     @GetMapping("/getBoardById")
