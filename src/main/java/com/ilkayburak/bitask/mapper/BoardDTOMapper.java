@@ -2,6 +2,7 @@ package com.ilkayburak.bitask.mapper;
 
 import com.ilkayburak.bitask.dto.BoardDTO;
 import com.ilkayburak.bitask.dto.CreateBoardRequestDTO;
+import com.ilkayburak.bitask.dto.UpdateBoardRequestDTO;
 import com.ilkayburak.bitask.entity.Board;
 import com.ilkayburak.bitask.entity.User;
 import java.time.LocalDateTime;
@@ -44,6 +45,22 @@ public class BoardDTOMapper {
                 .creator(creator)
                 .build()
                 ;
+    }
+
+    public BoardDTO mapForUpdateBoardRequest(Board board, UpdateBoardRequestDTO updateBoardRequestDTO) {
+        if (board == null || updateBoardRequestDTO == null) {
+            return null;
+        }
+        return BoardDTO.builder()
+            .id(board.getId())
+            .name(updateBoardRequestDTO.getName() != null ? updateBoardRequestDTO.getName() : board.getName())
+            .createDate(board.getCreateDate())
+            .creator(new UserDTOMapper().convertToDto(board.getCreator()))
+            .members(updateBoardRequestDTO.getMembersToAdd() != null || updateBoardRequestDTO.getMembersToRemove() != null
+                ? new UserDTOMapper().mapListWithoutObjects(board.getMembers())
+                : null)
+            .tasks(new TaskDTOMapper().mapList(board.getTasks()))
+            .build();
     }
 
     public List<BoardDTO> mapList(List<Board> list) {
