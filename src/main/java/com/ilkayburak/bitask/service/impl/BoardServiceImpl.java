@@ -53,6 +53,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponsePayload<BoardDTO> update(UpdateBoardRequestDTO updateBoardRequestDTO) {
+
         Optional<Board> boardOptional = boardRepository.findById(updateBoardRequestDTO.getId());
         if (boardOptional.isPresent()) {
             Board board = boardOptional.get();
@@ -94,10 +95,9 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public ResponsePayload<BoardDTO> getById(Long id) {
         Optional<Board> board = boardRepository.findById(id);
-        if (board.isPresent()) {
-            return new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDTO(board.get()));
-        }
-        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+      return board.map(value -> new ResponsePayload<>(ResponseEnum.OK, mapper.convertToDTO(value)))
+          .orElseGet(() -> new ResponsePayload<>(ResponseEnum.NOTFOUND,
+              MessageEnum.NOT_FOUND.getMessage()));
     }
 
     @Override
