@@ -48,6 +48,7 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/search/getAllJobTitles")
                     .permitAll()
+                    .requestMatchers("/api/v1/user/getAllUsers").authenticated()
                     .anyRequest()
                     .authenticated())
         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
