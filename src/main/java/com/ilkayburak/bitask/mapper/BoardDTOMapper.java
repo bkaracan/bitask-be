@@ -21,11 +21,14 @@ public class BoardDTOMapper {
         .name(board.getName())
         .createDate(board.getCreateDate())
         .creator(new UserDTOMapper().convertToDto(board.getCreator()))
-        .members(board.getMembers().stream().map(new UserDTOMapper()::convertToDto).toList())
+        .members(
+            board.getMembers() != null
+                ? board.getMembers().stream().map(new UserDTOMapper()::convertToDto).toList()
+                : List.of()) // Null ise boş bir liste döner
         .build();
-  }
+}
 
-  public Board convertToEntity(BoardDTO boardDTO) {
+    public Board convertToEntity(BoardDTO boardDTO) {
     if (boardDTO == null) {
       return null;
     }
