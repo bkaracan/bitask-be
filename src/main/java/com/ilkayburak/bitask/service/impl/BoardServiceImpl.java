@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,18 +34,17 @@ public class BoardServiceImpl implements BoardService {
     private final BoardDTOMapper mapper;
 
     @Override
+    @Transactional
     public ResponsePayload<BoardDTO> save(CreateBoardRequestDTO createBoardRequestDTO) {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User creator = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-
         // Aynı isimde bir board olup olmadığını kontrol et
         Optional<Board> existingBoard = boardRepository.findByNameIgnoreCase(createBoardRequestDTO.getName().toLowerCase());
         if (existingBoard.isPresent()) {
             // Eğer aynı isimde bir board varsa hata mesajı döndür
             return new ResponsePayload<>(ResponseEnum.ERROR, MessageEnum.RECORD_EXISTS.getMessage());
         }
-
         // Eğer aynı isimde bir board yoksa board kaydını gerçekleştir
         Board board = mapper.convertToEntityForScreenDTO(createBoardRequestDTO, creator);
         return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.SAVE_SUCCESS.getMessage(), mapper.convertToDTO(boardRepository.save(board)));
@@ -52,43 +52,36 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
+    @Transactional
     public ResponsePayload<BoardDTO> update(UpdateBoardRequestDTO updateBoardRequestDTO) {
-
         Optional<Board> boardOptional = boardRepository.findById(updateBoardRequestDTO.getId());
-        if (boardOptional.isPresent()) {
-            Board board = boardOptional.get();
-
-            // Güncel kullanıcıyı SecurityContextHolder'dan al
-            String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-            Optional<User> currentUserOptional = userRepository.findByEmail(username);
-            if (currentUserOptional.isEmpty()) {
-                return new ResponsePayload<>(ResponseEnum.UNAUTHORIZED, MessageEnum.NOT_AUTH.getMessage());
-            }
-
-            // Board adını güncelle
-            if (updateBoardRequestDTO.getName() != null) {
-                board.setName(updateBoardRequestDTO.getName());
-            }
-
-            // Üyeleri ekle
-            if (updateBoardRequestDTO.getMembersToAdd() != null) {
-                List<User> membersToAdd = userRepository.findAllById(updateBoardRequestDTO.getMembersToAdd());
-                board.getMembers().addAll(membersToAdd);
-            }
-
-            // Üyeleri çıkar
-            if (updateBoardRequestDTO.getMembersToRemove() != null) {
-                List<User> membersToRemove = userRepository.findAllById(updateBoardRequestDTO.getMembersToRemove());
-                board.getMembers().removeAll(membersToRemove);
-            }
-
-            // Güncellenen board'u kaydet
-            board = boardRepository.save(board);
-            return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.UPDATE_SUCCESS.getMessage(),
-                mapper.mapForUpdateBoardRequest(board, updateBoardRequestDTO));
+        if (boardOptional.isEmpty()) {
+            return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
         }
-        return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+
+        Board board = boardOptional.get();
+
+        // Güncel kullanıcı doğrulama
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        if (userRepository.findByEmail(username).isEmpty()) {
+            return new ResponsePayload<>(ResponseEnum.UNAUTHORIZED, MessageEnum.NOT_AUTH.getMessage());
+        }
+
+        // Board adını güncelle
+        Optional.ofNullable(updateBoardRequestDTO.getName()).ifPresent(board::setName);
+
+        // Üyeleri ekle ve çıkar
+        String validationError = validateAndProcessMembers(updateBoardRequestDTO, board);
+        if (validationError != null) {
+            return new ResponsePayload<>(ResponseEnum.NOTFOUND, validationError);
+        }
+
+        // Güncellenen board'u kaydet ve dön
+        board = boardRepository.save(board);
+        return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.UPDATE_SUCCESS.getMessage(),
+                mapper.mapForUpdateBoardRequest(board, updateBoardRequestDTO));
     }
+
 
 
 
@@ -135,5 +128,31 @@ public class BoardServiceImpl implements BoardService {
             return new ResponsePayload<>(ResponseEnum.OK, MessageEnum.DELETE_SUCCESS.getMessage());
         }
         return new ResponsePayload<>(ResponseEnum.NOTFOUND, MessageEnum.NOT_FOUND.getMessage());
+    }
+
+    private String validateAndProcessMembers(UpdateBoardRequestDTO requestDTO, Board board) {
+        // Üyeleri ekle
+        List<User> membersToAdd = getUsersByIds(requestDTO.getMembersToAdd());
+        if (membersToAdd == null) {
+            return "Some members to add were not found in the database.";
+        }
+        board.getMembers().addAll(membersToAdd);
+
+        // Üyeleri çıkar
+        List<User> membersToRemove = getUsersByIds(requestDTO.getMembersToRemove());
+        if (membersToRemove == null) {
+            return "Some members to remove were not found in the database.";
+        }
+        board.getMembers().removeAll(membersToRemove);
+
+        return null; // Hata yok
+    }
+
+    private List<User> getUsersByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of(); // Boş liste dön
+        }
+        List<User> users = userRepository.findAllById(ids);
+        return users.size() == ids.size() ? users : null; // Eksik varsa null dön
     }
 }

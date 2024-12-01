@@ -24,96 +24,88 @@ import org.springframework.security.core.userdetails.UserDetails;
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails, Principal {
 
-    @Id
-    @SequenceGenerator(name = "USER_ID_GENERATOR", sequenceName = "USER_ID_GEN", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ID_GENERATOR")
-    @Column(unique = true, nullable = false)
-    private Long id;
+  @Id
+  @SequenceGenerator(name = "USER_ID_GENERATOR", sequenceName = "USER_ID_GEN", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ID_GENERATOR")
+  @Column(unique = true, nullable = false)
+  private Long id;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 
-    private LocalDate dateOfBirth;
+  private LocalDate dateOfBirth;
 
-    @Column(unique = true)
-    private String email;
+  @Column(unique = true)
+  private String email;
 
-    private String password;
+  private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "job_title_id")
-    private JobTitle jobTitle;
+  @ManyToOne
+  @JoinColumn(name = "job_title_id")
+  private JobTitle jobTitle;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_status_id")
-    private UserStatus userStatus;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_status_id")
+  private UserStatus userStatus;
 
-    private boolean isAccountLocked;
+  private boolean isAccountLocked;
 
-    private boolean isEnabled;
+  private boolean isEnabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> roles;
+  @ManyToMany(fetch = FetchType.EAGER)
+  private List<Role> roles;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+  @CreatedDate
+  @Column(nullable = false, updatable = false)
+  private LocalDateTime createdDate;
 
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime lastModifiedDate;
+  @LastModifiedDate
+  @Column(insertable = false)
+  private LocalDateTime lastModifiedDate;
 
+  @Override
+  public String getName() {
+    return "";
+  }
 
-    @Override
-    public String getName() {
-        return "";
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
+  }
 
+  @Override
+  public String getPassword() {
+    return password;
+  }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .toList();
-    }
+  @Override
+  public String getUsername() {
+    return email;
+  }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return !isAccountLocked;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return !isAccountLocked;
-    }
+  @Override
+  public boolean isEnabled() {
+    return isEnabled;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  public String fullName() {
+    return getFirstName() + " " + getLastName();
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public String fullName() {
-        return getFirstName() + " " + getLastName();
-    }
-
-    public String getFullName() {
-        return firstName + "" + lastName;
-    }
 }
